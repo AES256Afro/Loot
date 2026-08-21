@@ -15,7 +15,7 @@ The project can use high-level genre inspiration, but it will not copy protected
 
 ## Current status
 
-A runnable M00 foundation now exists in Godot 4.7.2. It includes a third-person graybox encounter, one enemy, one attack, deterministic loot, original reactive commentary, atomic local saving, content validation, automated tests, runtime smoke checks, exported macOS and Windows development artifacts, and CI configuration. M00 and M01 remain in progress until user feel and direction review, a native Windows run or agreed substitute, fresh-clone proof, and first CI evidence are complete. See [IMPLEMENTATION_STATUS.md](IMPLEMENTATION_STATUS.md) for the exact boundary.
+A runnable M00 foundation now exists in Godot 4.7.2. It includes a third-person graybox encounter, one enemy, one attack, deterministic loot, original reactive commentary, atomic local saving, content validation, automated tests, runtime smoke checks, exported macOS, Windows, and Linux development artifacts, and passing CI. M00 remains in progress until user feel and direction review plus a native Windows run or agreed substitute. M01 acceptance evidence is complete but remains dependency-held by M00. See [IMPLEMENTATION_STATUS.md](IMPLEMENTATION_STATUS.md) for the exact boundary.
 
 ## Product assumptions
 
