@@ -61,7 +61,7 @@ tools/export.sh linux
 tools/export.sh all
 ```
 
-Generated builds go under `builds/` and are intentionally ignored by Git. Local macOS builds are unsigned development artifacts. Shipping distribution, signing, notarization, entitlements, and minimum-system targets are future release work.
+Generated builds go under `builds/` and are intentionally ignored by Git. Local macOS builds use Godot's built-in ad-hoc signing so they can run during development. Developer ID distribution signing, notarization, shipping entitlements, and minimum-system targets are future release work.
 
 ## Project layout
 
