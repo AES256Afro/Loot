@@ -1,0 +1,117 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scripts/game/spike_main.gd" id="1_main"]
+[ext_resource type="PackedScene" path="res://scenes/actors/player.tscn" id="2_player"]
+[ext_resource type="PackedScene" path="res://scenes/actors/spike_enemy.tscn" id="3_enemy"]
+
+[sub_resource type="Environment" id="Environment_annex"]
+background_mode = 1
+background_color = Color(0.027, 0.039, 0.055, 1)
+ambient_light_source = 3
+ambient_light_color = Color(0.25, 0.39, 0.47, 1)
+ambient_light_energy = 0.82
+reflected_light_source = 2
+tonemap_mode = 2
+
+[node name="SpikeMain" type="Node3D"]
+script = ExtResource("1_main")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_annex")
+
+[node name="KeyLight" type="DirectionalLight3D" parent="."]
+rotation = Vector3(-0.9, -0.55, 0)
+light_color = Color(0.72, 0.88, 1, 1)
+light_energy = 1.35
+shadow_enabled = true
+
+[node name="AccentLight" type="OmniLight3D" parent="."]
+position = Vector3(0, 4, -5)
+light_color = Color(1, 0.35, 0.19, 1)
+light_energy = 6.0
+omni_range = 12.0
+
+[node name="Player" parent="." instance=ExtResource("2_player")]
+position = Vector3(0, 0.1, 6)
+
+[node name="SpikeEnemy" parent="." instance=ExtResource("3_enemy")]
+position = Vector3(0, 0.1, -4)
+
+[node name="HUD" type="CanvasLayer" parent="."]
+
+[node name="Objective" type="Label" parent="HUD"]
+offset_left = 24.0
+offset_top = 20.0
+offset_right = 1250.0
+offset_bottom = 62.0
+theme_override_colors/font_color = Color(0.95, 0.97, 0.88, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.9)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
+theme_override_font_sizes/font_size = 24
+text = "M00 TEST ANNEX"
+
+[node name="EventFeed" type="RichTextLabel" parent="HUD"]
+offset_left = 24.0
+offset_top = 72.0
+offset_right = 920.0
+offset_bottom = 365.0
+mouse_filter = 2
+theme_override_colors/default_color = Color(0.92, 0.94, 0.96, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
+theme_override_font_sizes/normal_font_size = 19
+theme_override_font_sizes/bold_font_size = 19
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+
+[node name="SaveStatus" type="Label" parent="HUD"]
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 24.0
+offset_top = -140.0
+offset_right = 950.0
+offset_bottom = -104.0
+grow_vertical = 0
+theme_override_colors/font_color = Color(0.47, 0.91, 0.81, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
+theme_override_font_sizes/font_size = 18
+text = "SAVE: Waiting for first reward or F5."
+
+[node name="Controls" type="Label" parent="HUD"]
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 24.0
+offset_top = -98.0
+offset_right = 1260.0
+offset_bottom = -25.0
+grow_vertical = 0
+theme_override_colors/font_color = Color(0.78, 0.82, 0.87, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
+theme_override_font_sizes/font_size = 17
+text = "WASD move  |  Mouse look  |  Shift sprint  |  Space jump  |  Left click or F attack\nF5 save  |  F9 load  |  R restaff after victory  |  Esc release mouse  |  Controller supported"
+
+[node name="Reticle" type="Label" parent="HUD"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -8.0
+offset_top = -14.0
+offset_right = 8.0
+offset_bottom = 14.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(1, 0.74, 0.28, 0.8)
+theme_override_font_sizes/font_size = 22
+text = "+"
+horizontal_alignment = 1

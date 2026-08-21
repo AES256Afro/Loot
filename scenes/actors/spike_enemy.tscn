@@ -1,0 +1,53 @@
+[gd_scene load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://scripts/actors/spike_enemy.gd" id="1_enemy"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape_enemy"]
+radius = 0.52
+height = 1.6
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_enemy"]
+radius = 0.52
+height = 1.6
+
+[sub_resource type="StandardMaterial3D" id="Material_enemy"]
+albedo_color = Color(0.94, 0.24, 0.33, 1)
+emission_enabled = true
+emission = Color(0.16, 0.01, 0.02, 1)
+roughness = 0.5
+
+[sub_resource type="BoxMesh" id="BoxMesh_hat"]
+size = Vector3(1.25, 0.18, 0.8)
+
+[sub_resource type="StandardMaterial3D" id="Material_hat"]
+albedo_color = Color(0.98, 0.66, 0.15, 1)
+roughness = 0.7
+
+[node name="SpikeEnemy" type="CharacterBody3D"]
+collision_layer = 2
+collision_mask = 5
+script = ExtResource("1_enemy")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+position = Vector3(0, 0.8, 0)
+shape = SubResource("CapsuleShape_enemy")
+
+[node name="Visual" type="Node3D" parent="."]
+position = Vector3(0, 0.8, 0)
+
+[node name="Body" type="MeshInstance3D" parent="Visual"]
+mesh = SubResource("CapsuleMesh_enemy")
+material_override = SubResource("Material_enemy")
+
+[node name="Hat" type="MeshInstance3D" parent="Visual"]
+position = Vector3(0, 0.85, 0)
+mesh = SubResource("BoxMesh_hat")
+material_override = SubResource("Material_hat")
+
+[node name="StatusLabel" type="Label3D" parent="."]
+position = Vector3(0, 2.15, 0)
+billboard = 1
+modulate = Color(1, 0.9, 0.75, 1)
+outline_size = 8
+font_size = 30
+text = "GUTTER CLERK  3/3"

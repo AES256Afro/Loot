@@ -1,0 +1,15 @@
+# Godot generated data
+.godot/
+
+# Local builds and test output
+builds/
+test-artifacts/
+
+# Platform noise
+.DS_Store
+Thumbs.db
+
+# Editors
+.idea/
+.vscode/
+*.swp
