@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "items": [
+    {
+      "id": "item.spike.boots_of_occupational_hazard",
+      "display_name": "Boots of Occupational Hazard",
+      "rarity": "rare",
+      "slot": "feet",
+      "drop_weight": 32,
+      "power_id": "power.sure_footed_spite",
+      "power_text": "Your first dodge after entering combat leaves behind a very small warning cone. Enemies who ignore it are briefly staggered.",
+      "description": "The cone is not legally binding, but it is extremely judgmental.",
+      "tags": ["movement", "control", "gutterbloom", "spike"]
+    },
+    {
+      "id": "item.spike.municipal_complaint",
+      "display_name": "Municipal Complaint, Sharpened",
+      "rarity": "epic",
+      "slot": "weapon",
+      "drop_weight": 18,
+      "power_id": "power.escalate_in_writing",
+      "power_text": "Every third hit marks the target as Formally Notified. The next heavy hit detonates the notice.",
+      "description": "Filed in triplicate. One copy is already inside the monster.",
+      "tags": ["melee", "burst", "bureaucracy", "spike"]
+    },
+    {
+      "id": "item.spike.pearl_of_the_unbothered_drain",
+      "display_name": "Pearl of the Unbothered Drain",
+      "rarity": "legendary",
+      "slot": "charm",
+      "drop_weight": 5,
+      "power_id": "power.plausible_cleanliness",
+      "power_text": "Standing in a hazard for two seconds grants a cleansing pulse and stacking damage until you leave it.",
+      "description": "It insists the water was like this when it arrived.",
+      "tags": ["hazard", "cleanse", "damage", "gutterbloom", "spike"]
+    }
+  ]
+}

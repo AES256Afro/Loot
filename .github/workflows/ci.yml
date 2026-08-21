@@ -1,0 +1,56 @@
+name: Foundation checks
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+env:
+  GODOT_VERSION: "4.7.2"
+  XDG_DATA_HOME: ${{ runner.temp }}/godot-data
+
+jobs:
+  validate-test-export:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Godot
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/godot"
+          curl --fail --location --retry 3 \
+            "https://github.com/godotengine/godot/releases/download/4.7.2-stable/Godot_v4.7.2-stable_linux.x86_64.zip" \
+            --output "$RUNNER_TEMP/godot/godot.zip"
+          unzip -q "$RUNNER_TEMP/godot/godot.zip" -d "$RUNNER_TEMP/godot"
+          chmod +x "$RUNNER_TEMP/godot/Godot_v4.7.2-stable_linux.x86_64"
+          echo "GODOT_BIN=$RUNNER_TEMP/godot/Godot_v4.7.2-stable_linux.x86_64" >> "$GITHUB_ENV"
+
+      - name: Install export templates
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/template-unpack" "$XDG_DATA_HOME/godot/export_templates"
+          curl --fail --location --retry 3 \
+            "https://github.com/godotengine/godot/releases/download/4.7.2-stable/Godot_v4.7.2-stable_export_templates.tpz" \
+            --output "$RUNNER_TEMP/godot/templates.tpz"
+          unzip -q "$RUNNER_TEMP/godot/templates.tpz" -d "$RUNNER_TEMP/template-unpack"
+          mv "$RUNNER_TEMP/template-unpack/templates" "$XDG_DATA_HOME/godot/export_templates/4.7.2.stable"
+
+      - name: Validate and test
+        run: tools/check.sh
+
+      - name: Export Linux development build
+        run: tools/export.sh linux
+
+      - name: Upload development build
+        uses: actions/upload-artifact@v4
+        with:
+          name: loot-linux-development
+          path: builds/linux/
+          if-no-files-found: error
