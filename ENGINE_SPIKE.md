@@ -50,7 +50,7 @@ The graybox uses only engine-created primitive meshes and authored colors. It is
 | Exported encounter path | Passed mechanically | The macOS artifact reached victory, displayed a seeded Rare reward and reactive lines, autosaved two earned items across two defeats, and retained a valid backup. Feel remains pending user review. |
 | macOS export | Passed | Ad-hoc signed 179 MB universal app contains arm64 and x86-64 executables; packaged headless load exited cleanly. |
 | Windows cross-export | Passed | 98 MB x86-64 PE artifact created on the Mac. A native Windows run or agreed substitute remains open. |
-| CI | Configured, not run | A GitHub remote and workflow run do not yet exist. |
+| CI | Passed | Pull-request run `32442747080` validated content, ran the full harness, exported Linux x86-64, and uploaded the development artifact. |
 
 ## Observed engine risks
 
