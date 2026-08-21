@@ -92,4 +92,4 @@ Every production definition needs an immutable namespaced ID. The current valida
 
 `.github/workflows/ci.yml` pins Godot and its export templates to 4.7.2. It imports the project, validates content, runs tests, smoke-loads the main scene, exports a Linux development build, and uploads that build as an artifact.
 
-The workflow exists locally but cannot be considered proven until this project has a GitHub remote and a workflow run completes. Repository publication is a separate explicit action.
+The workflow is proven on GitHub. Pull-request run `32442747080` completed validation, all tests, the runtime smoke, Linux export, and artifact upload with Actions v7 on the hosted runner.
