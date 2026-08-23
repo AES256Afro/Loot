@@ -296,12 +296,17 @@ func _build_interface() -> void:
 
 	var top_panel := _panel(root, Rect2(18, 14, 1564, 68), Color("0b1119ed"), Color("d6a348"), 3)
 	var top_content := _absolute_content(top_panel)
-	_objective_label = _label(top_content, Rect2(18, 6, 1110, 31), 23, Color("f3d486"))
-	_subhead_label = _label(top_content, Rect2(18, 36, 1110, 24), 15, Color("b7c5ca"))
-	_loadout_badge = _label(top_content, Rect2(1128, 12, 140, 38), 18, Color("77e6d5"))
+	_objective_label = _label(top_content, Rect2(18, 6, 1000, 31), 23, Color("f3d486"))
+	_subhead_label = _label(top_content, Rect2(18, 36, 1000, 24), 15, Color("b7c5ca"))
+	var kingdom_button := _button("K  KINGDOM", Vector2(150, 46))
+	kingdom_button.position = Vector2(1024, 8)
+	kingdom_button.tooltip_text = "Safely extract to the exact entrance hex without losing owned items or accepted quests."
+	kingdom_button.pressed.connect(func() -> void: return_to_kingdom_requested.emit())
+	top_content.add_child(kingdom_button)
+	_loadout_badge = _label(top_content, Rect2(1180, 12, 106, 38), 18, Color("77e6d5"))
 	_loadout_badge.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	var archive_button := _button("I  ARCHIVE", Vector2(236, 46))
-	archive_button.position = Vector2(1280, 8)
+	var archive_button := _button("I  ARCHIVE", Vector2(218, 46))
+	archive_button.position = Vector2(1298, 8)
 	archive_button.pressed.connect(func() -> void: archive_requested.emit())
 	top_content.add_child(archive_button)
 
