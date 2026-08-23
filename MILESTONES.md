@@ -14,7 +14,7 @@
 
 | Gate | Milestones | Player-visible outcome |
 | --- | --- | --- |
-| Foundation Gate | M00-M04 | A pinned, testable Godot project with a controllable 3D character and an early Herald, Picket, Spotlight, and callback risk spike. |
+| Foundation Gate | M00-M04 | A pinned, testable Godot project with a procedural first-person dungeon, four-person planning combat, and an early Herald, Picket, Spotlight, and callback risk spike. |
 | Combat Gate | M05-M10 | One polished build can fight three enemy families, elites, and a boss. |
 | Loot/Persistence Gate | M11-M17 | Drops, Caches, Archive, equipment, crafting, save/load, and recovery form a durable loop. |
 | Vertical Slice | M18-M24 | A repeatable 20-to-30-minute expedition with settlement, bar, Hearthfold, commentary, living state, and boss aftermath. |
@@ -29,14 +29,14 @@
 
 **Depends on:** planning review.
 
-Build a disposable technical spike in the current stable Godot 4 release. Test third-person movement, one attack, one enemy, one item-definition load, and one atomic save. Compare typed GDScript against any serious alternative only if the spike exposes a concrete blocker.
+Build a disposable technical spike in the current stable Godot 4 release. Test first-person dungeon movement, low-resolution pixel presentation, one stopped-time party combat, three enemy definitions, one environmental interaction, deterministic loot, and one atomic save. The approved replacement contract is in `PIVOT_FIRST_PERSON_CRAWLER.md`.
 
 **Acceptance criteria**
 
-- The user confirms camera direction, tone range, solo/co-op priority, and stylized-versus-realistic production target.
+- The user confirms first-person camera direction, stopped-time choice combat, shaded lo-fi pixel production, and solo-first implementation.
 - Engine version and renderer are pinned and documented.
 - The spike runs on the development Mac and one representative Windows target or a documented substitute.
-- Movement, hit detection, content loading, and save write work in an exported build.
+- Dungeon movement, command planning, deterministic resolution, content loading, reward granting, and save writing work in an exported build.
 - A written decision records observed risks instead of relying on general engine preference.
 - `RISK_REGISTER.md` is updated with evidence from the spike and names any product promise threatened by the engine choice.
 
@@ -72,33 +72,33 @@ Implement immutable content IDs, typed definitions, controlled tags, reference v
 - Hard filters reject ineligible commentary before scoring, and a fixed event sequence produces the same winning definition.
 - The spike meets the commentary-definition count, performance, memory-retention, and selection tests in `COMMENTARY_SPOTLIGHT_SPEC.md`.
 
-## M03 - Character controller, camera, and input
+## M03 - Dungeon stepper, first-person camera, and input
 
 **Depends on:** M01.
 
-Implement movement, sprint, jump or contextual vault, dodge, slopes, steps, camera collision, target awareness, interact, input rebinding, controller glyph switching, and baseline animation state.
+Implement deterministic cardinal movement, animated and instant step options, left and right turning, backward movement, room interaction, first-person field-of-view settings, motion reduction, input rebinding, controller glyph switching, and command-menu navigation.
 
 **Acceptance criteria**
 
-- The full movement route is completable with controller only and keyboard/mouse only.
-- Camera distance, field of view, sensitivity, inversion, shake, and motion blur settings persist.
-- Dodge invulnerability and recovery windows have visible debug overlays and data definitions.
-- The controller does not get stuck on standard stairs, slopes, doorways, ledges, or moving platforms in the test gym.
+- The full six-room route is completable with controller only and keyboard/mouse only.
+- Step animation, instant movement, field of view, turn animation, screen shake, and motion-reduction settings persist.
+- Invalid moves provide readable feedback without changing position or consuming resources.
+- Movement cannot enter a nonexistent connection, bypass an uncleared encounter, or desynchronize the saved room and facing.
 - Input prompts update correctly after rebinding.
 
-## M04 - Gutterbloom traversal graybox
+## M04 - Procedural Gutterbloom crawler graybox
 
 **Depends on:** M02, M03.
 
-Build the first zone's graybox: Latchmarket edge, The Dry Boot, flooded route, root bridge, **The Courtesy Drain** lair, boss arena, Hearthfold anchor, two shortcuts, and one optional secret.
+Build the first deterministic procedural dungeon grammar: Intake, Fungus Nursery, Pressure Junction, Flooded Cistern, Promoted Office, and Hearthfold Anchor. Preserve authored encounter order while varying connected topology by seed.
 
 **Acceptance criteria**
 
-- The critical route, shortcut route, and secret route are all traversable.
-- Safety states and streaming/interior boundaries are represented even before full systems exist.
-- Navigation meshes, collision layers, encounter volumes, and anchor transitions pass automated reference checks.
-- A no-combat traversal run is stable in an exported build.
-- The Courtesy Drain demonstrates one visible Temperament response through layout, signage, or hazard state without relying on final voice assets.
+- Six unique connected rooms generate from a seed and reproduce identically for the same seed.
+- Room roles, encounter sources, environmental interaction, and Hearthfold destination remain valid across generated topologies.
+- Cardinal connections, room entry, encounter locks, and anchor transitions pass automated reference checks.
+- The complete route is stable in an exported build and can start a new seed without restarting the application.
+- The Pressure Junction demonstrates one optional environment-to-combat consequence without reducing baseline rewards if ignored.
 
 ## Gate A - Foundation review
 
@@ -110,7 +110,7 @@ Do not begin content multiplication until M00-M04 are complete. Record control f
 
 **Depends on:** M02, M03.
 
-Implement Vitality, Guard, Drive, Strain, physical and energetic damage, stagger, status buildup, resistances, weak points, death events, and modifier traces.
+Expand the prototype resolver into the production round pipeline: visible intentions, action priority, targeting laws, Vitality, Guard, Focus, Strain, physical and energetic damage, status buildup, resistances, weak points, defeat events, and modifier traces.
 
 **Acceptance criteria**
 
@@ -118,32 +118,35 @@ Implement Vitality, Guard, Drive, Strain, physical and energetic damage, stagger
 - Every damage result can explain base, additive, multiplicative, conversion, resistance, cap, and final values.
 - Status thresholds and boss control resistance remain useful but cannot create permanent control loops.
 - Trigger recursion and proc rates are bounded by tests.
+- Planning never mutates authoritative combat state before commitment, and the same state plus commands produces the same result.
+- Enemy intentions disclose targets and actionable outcomes unless a named, inspectable mechanic explicitly creates uncertainty.
 
-## M06 - Riftblade starter kit
+## M06 - Starter party kits and command interface
 
 **Depends on:** M05.
 
-Implement Longblade light/heavy chains, dodge attack, Step Between, Return Stroke, Seam Rake, one utility power, Drive costs, cooldowns, and Afterline presentation.
+Turn the M00 party into production starter kits: Dena the Bulwark, Moss the Hexer, Vell the Scavenger, and Ilex the Warden. Each receives a basic action, two role powers, one setup or utility action, one defensive option, resource costs, equipment hooks, and clear command descriptions.
 
 **Acceptance criteria**
 
-- The starter kit supports mobility, area pressure, single-target burst, defense, and one meaningful combo.
-- Every move has tuned anticipation, active, impact, and recovery phases.
-- Input buffering and cancel windows are explicit and tested.
-- A combat dummy reports damage, stagger, status, Drive, and proc summaries.
+- The starter party supports single-target pressure, area damage, defense, weakening, exposure, healing, and at least three cross-member combinations.
+- Every command previews legal targets, resource cost, expected range, status effect, priority, and environmental interaction before commitment.
+- Incapacitated members, target death, invalid commands, and mid-round retarget rules are explicit and tested.
+- A combat laboratory reports damage, Guard, status, Focus, Strain, target changes, item triggers, and resolution order.
+- Keyboard, mouse, and controller can plan, revise, inspect, and resolve a full party round without relying on timing or pointer precision.
 
 ## M07 - Three Gutterbloom enemy families
 
 **Depends on:** M04-M06.
 
-Implement Knuckle Newts, Tollmold, and Sump Knights with distinct approach, pressure, defense, vulnerability, and group behavior.
+Expand Filing Larvae, Pipe Goblins, and Form Auditor constructs into three production enemy families with distinct intention patterns, preferred targets, defenses, vulnerabilities, formation interactions, and escalation behavior.
 
 **Acceptance criteria**
 
-- Each family is identifiable by silhouette and combat behavior before reading its name.
-- Mixed groups create new decisions without unreadable simultaneous attacks.
-- Role slots limit unfair crowd attacks.
-- Navigation failure, leash, reset, and unreachable-player recovery are tested.
+- Each family is identifiable by silhouette, color language, and declared intention pattern before reading its codex entry.
+- Mixed groups create new planning decisions without overwhelming the intention panel.
+- Target distribution and action budgets prevent unavoidable focus fire before higher optional difficulty.
+- Formation changes, reinforcement rules, reset, and retreat recovery are tested.
 - Enemies expose exact resistances and break discoveries through the codex.
 
 ## M08 - Elite mutation framework
@@ -164,32 +167,32 @@ Implement Aftershock, Choirbound, Taxing, Mirrorborn, Unannounced, and Well-Fed 
 
 **Depends on:** M05-M08.
 
-Build a three-phase Gutterbloom boss using water-level control, fungal growth, Tollmold bargains, and route knowledge introduced in the zone.
+Build a multi-phase Gutterbloom boss using water-level control, fungal growth, Underworks bargains, formation changes, and route knowledge introduced in the zone.
 
 **Acceptance criteria**
 
 - The arena checkpoint is under 20 seconds from a discovered anchor.
 - First-kill reward, repeat pool, Boss Seal, and state-change event are defined.
 - Intros and phase cinematics can be skipped after first viewing.
-- All lethal attacks have redundant visual and audio warnings.
-- At least three viable Riftblade builds defeat it in playtest without relying on a bug or one mandatory item.
+- All lethal actions declare redundant visual, textual, and audio warnings before the plan is committed.
+- At least three viable party loadouts defeat it in playtest without relying on a bug, one mandatory party composition, or one mandatory item.
 
 ## M10 - Combat feel and accessibility pass
 
 **Depends on:** M06-M09.
 
-Tune hit pause, camera response, animation, sound, effects, damage numbers, aim assistance, telegraphs, flash reduction, shake reduction, hold/toggle behavior, and difficulty assists.
+Tune command flow, target selection, round pacing, camera response, sprite animation, sound, effects, damage presentation, intention telegraphs, flash reduction, motion reduction, hold/toggle behavior, and difficulty assists.
 
 **Acceptance criteria**
 
-- Playtesters can explain why they took damage in most observed failures.
-- Reduced motion, reduced flashes, scalable HUD, remappable inputs, subtitle controls, and aim options work in the exported build.
+- Playtesters can explain why they took damage, why a target changed, and which action created a status in most observed failures.
+- Reduced motion, instant steps and turns, reduced flashes, scalable HUD, remappable inputs, subtitle controls, and planning assists work in the exported build.
 - Effects do not obscure boss tells at default or reduced settings.
 - The standard stress encounter meets the provisional frame-time budget on named hardware.
 
 ## Gate B - Combat review
 
-The game must be enjoyable for 15 minutes with placeholder rewards before building the full loot loop. Record unedited play sessions and concrete findings about responsiveness, readability, repetition, and build decisions.
+The game must be enjoyable for 15 minutes with placeholder rewards before building the full loot loop. Record unedited play sessions and concrete findings about navigation feel, planning clarity, round pacing, repetition, and party decisions.
 
 # Phase 2: Loot and persistence
 
@@ -304,7 +307,7 @@ Run a two-hour repeated combat and loot session. Verify no item loss, reproducib
 
 **Depends on:** M04, M07-M09, M17.
 
-Implement water level, route state, Knuckle Newt pressure, Tollmold spread, Sump Knight patrol control, resource abundance, settlement prosperity, threat, weather, boss succession, and the five Spotlight ranks, banked bonuses, and optional broadcast complications in `COMMENTARY_SPOTLIGHT_SPEC.md`. Use the layered tick, dirty-fact indexes, named-entity records, local Memory Graph, and atomic deltas in `WORLD_SIMULATION_AND_MEMORY.md`.
+Implement water level, route state, Filing Larva pressure, Tollmold spread, Form Auditor patrol control, resource abundance, settlement prosperity, threat, weather, boss succession, and the five Spotlight ranks, banked bonuses, and optional broadcast complications in `COMMENTARY_SPOTLIGHT_SPEC.md`. Use the layered tick, dirty-fact indexes, named-entity records, local Memory Graph, and atomic deltas in `WORLD_SIMULATION_AND_MEMORY.md`.
 
 **Acceptance criteria**
 
@@ -768,7 +771,7 @@ The first implementation work should remain narrow:
 3. Pin the engine version and record the engine decision.
 4. Create M01's repository and headless quality harness.
 5. Build M03 movement in a tiny test gym.
-6. Load one Longblade, one Riftblade power, one Knuckle Newt, and one reward definition through M02.
+6. Load one Bulwark weapon, one Hexer power, one Filing Larva, and one reward definition through M02.
 7. Export the first runnable build before expanding the Gutterbloom graybox.
 
 The target is not to build all 51 milestones at once. The target is to make M00-M04 honest, playable, testable, and easy to extend, then move through each gate without sacrificing the massive long-term ambition.

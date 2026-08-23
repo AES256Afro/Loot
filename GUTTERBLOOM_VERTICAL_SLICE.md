@@ -2,7 +2,7 @@
 
 ## 1. Slice purpose
 
-The Gutterbloom is a 20-to-30-minute repeatable expedition that proves the game's unusual combination of readable 3D combat, relaxed target farming, Spotlight stakes, reactive humor, companion memory, living lairs, persistent zone change, absurd loot, near-unlimited storage, and a portable upgradeable home.
+The Gutterbloom is a 20-to-30-minute repeatable first-person expedition that proves the game's unusual combination of procedural dungeon exploration, stopped-time party combat, relaxed target farming, Spotlight stakes, reactive humor, companion memory, living lairs, persistent zone change, absurd loot, near-unlimited storage, and a portable upgradeable home.
 
 It is not a tutorial prologue that gets discarded. The slice becomes the first subregion of the production Gutterbloom zone if its systems pass.
 
@@ -48,7 +48,7 @@ Lower Spillway [post-boss shortcut and changed farm route]
 Latchmarket return / Hearthfold anchor
 ```
 
-The critical route is short and readable. The Causeway and Culvert provide equivalent reward budgets through different encounter categories. The post-boss spillway creates a five-to-eight-minute repeat route without making the first journey obsolete.
+The critical route is short and readable. Authored room roles are arranged through deterministic procedural topology rather than one permanently fixed corridor graph. The Causeway and Culvert provide equivalent reward budgets through different encounter categories. The post-boss spillway creates a five-to-eight-minute repeat route without making the first journey obsolete.
 
 ## 4. Place and conflict
 
@@ -57,9 +57,9 @@ Latchmarket occupies the upper roofs of a trade district swallowed by luminous d
 The result supports stakes and comedy:
 
 - merchants need the lower route opened;
-- Sump Knights enforce obsolete water policy;
+- Form Auditors enforce obsolete water policy;
 - Tollmold colonies have built a tax ecology around the flood;
-- Knuckle Newts thrive in the elevated canals;
+- Filing Larvae thrive wherever maintenance records become damp enough to hatch;
 - the Courtesy Drain believes the crisis is a backlog of maintenance tickets;
 - the Herald treats a municipal disaster as a promising regional program;
 - Picket knows the regulations are wrong but initially believes they must still be followed.
@@ -72,7 +72,7 @@ Roof merchants, haulers, gardeners, and repair crews who want predictable routes
 
 ### Office of Water Continuity
 
-Sump Knights and drowned clerks still executing emergency orders. They are hostile in the basin but may be appealed, redirected, or studied in later Gutterbloom content.
+Form Auditors and drowned clerks still execute emergency orders. They are hostile in the basin but may be appealed, redirected, or studied in later Gutterbloom content.
 
 ### Tollmold Registry
 
@@ -85,10 +85,10 @@ Neutral service workers who trade rumors, food, brawl wagers, and honest practic
 ### Slice cast
 
 - **Dava Fen:** the Dry Boot's proprietor, rumor verifier, and neutral mediator.
-- **Scrip Nine:** a retired Sump Knight clerk with a nonexclusive clue to the Rain Treasurer's mandate.
+- **Scrip Nine:** a retired Form Auditor clerk with a nonexclusive clue to the Rain Treasurer's mandate.
 - **Quoin Rusk:** the anchor specialist who helps stabilize Picket's Kiosk connection.
 - **Registrar Loam:** the Tollmold delegate in one Culvert and mediation scene.
-- **Due Notice:** a recurring Sump Knight state built through the promoted-enemy framework and reusable Sump Knight kit.
+- **Due Notice:** a recurring Form Auditor state built through the promoted-enemy framework and reusable Form Auditor kit.
 
 Skip Nall, Mara Venn, and Three-Cups exist as data-only simulation fixtures during the slice and receive full presentation during M27. `NPC_DOSSIERS.md` defines the ensemble and prevents this cast from silently becoming eight bespoke vertical-slice productions.
 
@@ -128,11 +128,11 @@ Picket Trust has three slice states: Provisional, Cooperative, and Personally Co
 
 ### E01: Floodgate Commons
 
-Two Knuckle Newts teach group bracing and flanking. A third enters only after the player uses a power, preventing the first fight from becoming visual noise. Picket marks the braced weak point. The Herald can award an Accolade for using the floodgate to separate the pack.
+Two Filing Larvae teach visible intentions, target selection, Guard, and exposed targets. A third enters only after the player uses a Power, preventing the first planning screen from becoming visual noise. Picket marks the brittle filing ridge. The Herald can award an Accolade for using the floodgate to separate the pack.
 
 ### E02A: Spore Causeway
 
-A visible route with Knuckle Newts and a Tollmold growth hazard. The player can use fire to clear growth quickly, redirect water to move it safely, or fight around it. Excessive fire changes the Courtesy Drain toward Concerned and increases Cinder material rewards.
+A visible route with Filing Larvae and a Tollmold growth hazard. The party can use fire to clear growth quickly, redirect water to move it safely, or plan around it. Excessive fire changes the Courtesy Drain toward Concerned and increases Cinder material rewards.
 
 ### E02B: Tollmold Culvert
 
@@ -158,7 +158,7 @@ A service counter scans the build and generates a maintenance category. The resu
 
 ### Room B: Pressure Test
 
-Moving water jets, breakable valves, and Sump Knights teach positioning. The player may repair a valve, weaponize it, or ignore it.
+Moving water jets, breakable valves, Pipe Goblins, and Form Auditors teach intention order and formation control. The player may repair a valve, weaponize it, or ignore it.
 
 ### Room C: Lost Property
 
@@ -202,11 +202,11 @@ The fifth opportunity is the only explicit bet. It is never preselected. Declini
 
 ### Identity
 
-The Rain Treasurer is a towering Sump Knight fused to gauges, lockboxes, and a waterwheel ledger. It interprets damage as an unauthorized withdrawal and the lowering flood as insolvency.
+The Rain Treasurer is a towering Form Auditor fused to gauges, lockboxes, and a waterwheel ledger. It interprets damage as an unauthorized withdrawal and the lowering flood as insolvency.
 
 ### Phase 1: Account Reconciliation
 
-- circular melee sweeps teach dodge direction;
+- declared circular sweeps teach Guard allocation and action priority;
 - two pressure jets cross the arena with long telegraphs;
 - the exposed gauge is a Pierce weak point;
 - blocking or redirecting a jet opens a Guard-break window;
@@ -216,7 +216,7 @@ The Rain Treasurer is a towering Sump Knight fused to gauges, lockboxes, and a w
 
 - water rises in two arena quadrants, then rotates;
 - Tollmold plates can provide temporary footing, consume a dropped material, or be destroyed;
-- one Sump Knight clerk enters, using the zone's familiar formation behavior;
+- one Form Auditor clerk enters, using the zone's familiar formation behavior;
 - the boss stores elemental buildup in its tank, then vents it with a visible type.
 
 ### Phase 3: Liquidation
@@ -246,8 +246,8 @@ The slice draws these existing catalog laws into a fixed targetable pool:
 
 | Item | Primary source | Build purpose |
 | --- | --- | --- |
-| Second Opinion | boss choice and Longblade attunement | Afterline melee repetition |
-| The Polite Hammer | promoted Sump Knight | counterattack Impact build |
+| Second Opinion | boss choice and Bulwark attunement | allied-action repetition |
+| The Polite Hammer | promoted Form Auditor | counterattack Impact build |
 | Exit Interview | Tollmold contract Cache | position and buff theft |
 | Raincheck | Rain Treasurer repeat pool | missed-shot projectile planning |
 | Nobody's Spear | Gutterbloom mastery | zone-element adaptation |
@@ -267,8 +267,8 @@ Every item lists its source after discovery. Boss Seals, Echo Shards, attunement
 
 - water level: emergency high;
 - lower spillway: blocked;
-- Knuckle Newt pressure: high in rooftop canals;
-- Sump Knight patrol: controls Root-Turn Junction;
+- Filing Larva pressure: high in rooftop canals;
+- Form Auditor patrol: controls Root-Turn Junction;
 - Pale Sumpcap resource: scarce;
 - Latchmarket prosperity: strained;
 - Courtesy Drain: unresolved backlog;
@@ -279,7 +279,7 @@ Every item lists its source after discovery. Boss Seals, Echo Shards, attunement
 - water level falls to managed medium;
 - lower spillway opens as a fast farming route;
 - Newts move toward exposed mud flats, changing one combat formation;
-- surviving Sump Knights retreat to a smaller toll patrol;
+- surviving Form Auditors retreat to a smaller toll patrol;
 - Pale Sumpcaps bloom along the exposed walls;
 - The Dry Boot gains one vendor service and changed rumor set;
 - the Courtesy Drain gains Memory Rank 1;
@@ -320,9 +320,9 @@ The slice must support at least these callback chains:
 
 The slice should stay intentionally small:
 
-- one player body and one production starter outfit;
-- Longblade plus three additional weapon-family test sets;
-- one full Riftblade kit;
+- four party portraits and one production expedition presentation set;
+- one weapon-family test set for each starter role;
+- one full four-member starter-party kit;
 - Picket with four protocols;
 - three ordinary enemy families;
 - six elite mutations;
@@ -332,7 +332,7 @@ The slice should stay intentionally small:
 - 12 curated legendaries plus ordinary generated gear;
 - three Cache types;
 - one safe settlement edge and one semi-safe bar;
-- Dava Fen and Scrip Nine as production social NPCs, Quoin Rusk as a shared service specialist, Registrar Loam in one limited scene, and Due Notice through the promoted Sump Knight framework;
+- Dava Fen and Scrip Nine as production social NPCs, Quoin Rusk as a shared service specialist, Registrar Loam in one limited scene, and Due Notice through the promoted Form Auditor framework;
 - data-only simulation fixtures for the remaining Gutterbloom cast, deferred to M27 presentation;
 - two Hearthfold rooms with one Reclamation upgrade;
 - four authored situations serving as the slice's four world-event definitions, plus six contracts;
@@ -368,7 +368,7 @@ Anything else needs to replace a slice item, not silently join the list.
 ### Feel
 
 - Most observed combat damage can be attributed to a readable cause.
-- At least three Riftblade loadouts finish the route through different strengths.
+- At least three party loadouts finish the route through different strengths and no mandatory composition.
 - Route traversal does not create repeated empty stretches longer than the five-to-eight-minute loop allows.
 
 ### Humor
@@ -395,12 +395,12 @@ Anything else needs to replace a slice item, not silently join the list.
 1. M00 engine/export spike.
 2. M01 repository and headless harness.
 3. M02 typed events plus synthetic Herald/Picket/Spotlight test.
-4. M03 character and camera test gym.
-5. M04 full route graybox.
-6. One Knuckle Newt encounter.
-7. Riftblade Longblade kit.
+4. M03 first-person dungeon stepper and command-menu test gym.
+5. M04 procedural six-room route graybox.
+6. One Filing Larva encounter.
+7. Four starter-party command kits.
 8. One generated item to equip, save, reload, and reclaim.
 9. Picket's Inspection Pulse and one callback.
 10. Courtesy Drain Intake room with two moods.
 
-The first exported playable build should exist by step 4. It does not wait for a finished zone.
+The first exported playable build exists through the replacement M00 slice. It does not wait for a finished zone.
