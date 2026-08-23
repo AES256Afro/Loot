@@ -2,7 +2,7 @@
 
 ## 1. Technical direction
 
-Use Godot 4.7.2 stable, pinned in the repository, with typed GDScript and a data-driven content layer. The approved runtime direction is a low-resolution first-person 3D dungeon viewport beneath a resolution-independent interface, with deterministic plan-and-resolve combat isolated from presentation.
+Use Godot 4.7.2 stable, pinned in the repository, with typed GDScript and a data-driven content layer. The approved runtime direction combines a low-resolution top-down strategic world and settlement presentation with the proven first-person 3D dungeon viewport beneath a resolution-independent interface. Deterministic plan-and-resolve combat remains isolated from presentation and can be entered from kingdom sites, settlements, situations, or dungeons.
 
 Why this direction:
 

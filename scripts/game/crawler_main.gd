@@ -14,6 +14,8 @@ const MODE_REWARD := "reward"
 const MODE_HEARTHFOLD := "hearthfold"
 const MODE_PARLEY := "parley"
 const MODE_BAR := "bar"
+const MODE_KINGDOM := "kingdom"
+const MODE_TOWN := "town"
 const PROFILE_MODE := "pixel_crawler"
 
 const FACING_DIRECTIONS: Array[Vector2i] = [
@@ -27,6 +29,7 @@ const FACING_NAMES := ["NORTH", "EAST", "SOUTH", "WEST"]
 @onready var dungeon_world: Node3D = $ViewportContainer/WorldViewport/DungeonWorld
 @onready var camera: Camera3D = $ViewportContainer/WorldViewport/DungeonWorld/Camera3D
 @onready var hud: CrawlerHUDV2 = $HUD
+@onready var world_hud: KingdomHUD = $KingdomHUD
 
 var _generator := DungeonGenerator.new()
 var _combat := CombatResolver.new()
@@ -36,6 +39,7 @@ var _equipment := EquipmentService.new()
 var _assets := GeneratedAssetLibrary.new()
 var _dialogue := ReactiveDialogue.new()
 var _rivals := RivalService.new()
+var _worlds := KingdomMapService.new()
 
 var _layout: Dictionary = {}
 var _run_seed := BASE_RUN_SEED
@@ -66,6 +70,9 @@ var _generated_nodes: Array[Node] = []
 var _enemy_visuals: Array[Sprite3D] = []
 var _enemy_visual_by_index: Dictionary = {}
 var _picket_visual: Sprite3D
+var _world_state: Dictionary = {}
+var _world_cells: Array = []
+var _world_return_view := ""
 
 
 func _ready() -> void:
@@ -75,6 +82,13 @@ func _ready() -> void:
 			push_error(content_error)
 		hud.push_line("SYSTEM", "Content failed validation. Run tools/check.sh.")
 		return
+	if not _worlds.load_definition():
+		for world_error in _worlds.last_errors:
+			push_error(world_error)
+			hud.push_line("SYSTEM", world_error)
+		return
+	_world_cells = _worlds.generate_cells()
+	_world_state = _worlds.create_default_state()
 	_equipment_state = _equipment.create_default_state(Content.all_items())
 	_rival_state = _rivals.create_default_state()
 	for dialogue_error in _dialogue.validate():
@@ -86,6 +100,7 @@ func _ready() -> void:
 	_attach_picket_to_camera()
 	if not _load_crawler_profile(false):
 		_start_new_expedition(false)
+		_show_kingdom_map()
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -99,6 +114,13 @@ func _unhandled_input(event: InputEvent) -> void:
 			get_viewport().set_input_as_handled()
 			return
 		if event.physical_keycode in [KEY_I, KEY_ESCAPE]:
+			if world_hud.is_world_visible():
+				if event.physical_keycode == KEY_ESCAPE and world_hud.service_is_open():
+					world_hud.hide_service()
+				elif event.physical_keycode == KEY_I:
+					_show_world_archive_summary()
+				get_viewport().set_input_as_handled()
+				return
 			if hud.social_is_open() and event.physical_keycode == KEY_ESCAPE:
 				_on_social_choice_selected("leave_bar" if _social_context == "bar" else "end_parley")
 			elif hud.archive_is_open():
@@ -137,6 +159,7 @@ func _connect_hud() -> void:
 	hud.reward_closed.connect(_close_reward)
 	hud.new_expedition_requested.connect(_on_new_expedition)
 	hud.return_to_dungeon_requested.connect(_return_from_hearthfold)
+	hud.return_to_kingdom_requested.connect(_return_to_kingdom)
 	hud.bent_pipe_requested.connect(_open_bent_pipe)
 	hud.social_choice_selected.connect(_on_social_choice_selected)
 	hud.archive_requested.connect(_open_archive)
@@ -145,6 +168,11 @@ func _connect_hud() -> void:
 	hud.archive_favorite_requested.connect(_on_archive_favorite_requested)
 	hud.save_loadout_requested.connect(_on_save_loadout_requested)
 	hud.apply_loadout_requested.connect(_on_apply_loadout_requested)
+	world_hud.travel_requested.connect(_on_world_travel_requested)
+	world_hud.site_action_requested.connect(_on_world_site_action_requested)
+	world_hud.town_exit_requested.connect(_on_town_exit_requested)
+	world_hud.town_location_action_requested.connect(_on_town_location_action_requested)
+	world_hud.service_choice_selected.connect(_on_world_service_choice_selected)
 
 
 func _handle_exploration_key(keycode: Key) -> void:
@@ -210,6 +238,8 @@ func _start_new_expedition(increment_index: bool = true) -> void:
 	hud.hide_hearthfold()
 	hud.hide_reward()
 	hud.hide_social()
+	world_hud.hide_all()
+	hud.show()
 	hud.clear_feed()
 	hud.push_line("HERALD", "A four-person Claimant committee has entered the Gutterbloom. Consensus is not expected.")
 	hud.push_line("PICKET", "The route contains six rooms and at least seven violations. The difference is structural creativity.")
@@ -667,7 +697,7 @@ func _open_hearthfold() -> void:
 		relationship_line,
 	]
 	var bar_available := _rivals.can_visit_bar(_rival_state, _run_index)
-	hud.show_hearthfold(summary, bar_available, "Scrip is available under neutral-ground rules." if bar_available else "The Bent Pipe has no new recurring-actor conversation this expedition.")
+	hud.show_hearthfold(summary, bar_available, "Scrip is available under neutral-ground rules." if bar_available else "The Bent Pipe has no new recurring-actor conversation this expedition.", not _world_state.is_empty())
 	GameEvents.publish(&"hearthfold.entered", {"run_index": _run_index})
 	_save_profile(true)
 
@@ -678,6 +708,312 @@ func _return_from_hearthfold() -> void:
 	hud.hide_hearthfold()
 	_mode = MODE_EXPLORATION
 	_update_exploration_hud()
+
+
+func _show_kingdom_map() -> void:
+	_world_state = _worlds.normalize_state(_world_state)
+	_world_state["active_view"] = "kingdom"
+	_mode = MODE_KINGDOM
+	hud.hide_hearthfold()
+	hud.hide_reward()
+	hud.hide_social()
+	hud.hide()
+	world_hud.show_kingdom(_worlds.definition, _world_cells, _world_state, _inventory.size())
+	_save_profile(true)
+
+
+func _show_town_map() -> void:
+	_world_state = _worlds.normalize_state(_world_state)
+	_world_state["active_view"] = "town"
+	_mode = MODE_TOWN
+	hud.hide()
+	world_hud.show_town(_worlds.definition, _world_state, _inventory.size())
+	_save_profile(true)
+
+
+func _on_world_travel_requested(q: int, r: int) -> void:
+	if _mode != MODE_KINGDOM:
+		return
+	var result := _worlds.travel(_world_state, Vector2i(q, r))
+	_world_state = result.get("state", _world_state)
+	_show_kingdom_map()
+	if not bool(result.get("ok", false)):
+		_show_message_service("TRAVEL NOT FILED", "Kingdom route service", String(result.get("message", "The route could not be resolved.")))
+
+
+func _on_world_site_action_requested(site_id: String, action: String) -> void:
+	if _mode != MODE_KINGDOM:
+		return
+	match action:
+		"enter_town":
+			_show_town_map()
+		"claim_resource":
+			var result := _worlds.claim_resource(_world_state, site_id)
+			_world_state = result.get("state", _world_state)
+			_save_profile(true)
+			_show_message_service("REGIONAL COLLECTION", "Resource site remains permanently mapped", String(result.get("message", "No resource was collected.")))
+		"inspect_event":
+			_show_event_service(site_id)
+		"enter_dungeon":
+			_show_dungeon_briefing(site_id)
+		"discover_lore":
+			_discover_and_show_lore(site_id)
+		"enter_hearthfold":
+			_heal_party()
+			_save_profile(true)
+			world_hud.show_service(
+				"HEARTHFOLD ROAD ANCHOR",
+				"Portable home threshold  |  Sanctuary  |  Upgrade foundation",
+				"[color=#87e8d7][b]The party is fully healed and the profile is saved.[/b][/color]\n\nThis threshold is the persistent public edge of the Hearthfold. Future upgrades attach here and follow the party between kingdoms. No storage tax, decay timer, or abandonment penalty is active.",
+				[_close_option()]
+			)
+		"inspect_social":
+			world_hud.show_service(
+				"SKIP NALL'S CARAVAN REST",
+				"Semi-safe social camp  |  Rumors are reported, not guaranteed",
+				"Skip Nall has three parcels, five chairs, and no confidence about which category the chairs currently occupy.\n\n[color=#f0ca73][b]PICKET:[/b][/color] The camp is temporary. The relationships are not.",
+				[{"label": "ASK FOR LORE SAUCE", "action": "discover_lore", "payload": {"source_id": site_id}}, _close_option()]
+			)
+		"inspect_shrine":
+			world_hud.show_service(
+				"SHRINE OF PRIOR ARRIVAL",
+				"Semi-safe divine site  |  Folklore provenance",
+				"The shrine requests proof that you have already arrived. The party points at itself. The shrine asks for something less argumentative.\n\nFuture god and demigod relationships will use visible favor, remembered conduct, and dialogue checks here.",
+				[{"label": "REQUEST A FILED OMEN", "action": "discover_lore", "payload": {"source_id": site_id}}, _close_option()]
+			)
+		"inspect_border":
+			world_hud.show_service(
+				"EASTERN CLAIM GATE",
+				"Future kingdom connection  |  Safe border site",
+				"The gate is open. The paperwork is not. Additional authored kingdoms will connect here without resetting this map, its towns, or its relationships.\n\n[color=#f0ca73][b]HERALD:[/b][/color] Congratulations on reaching content that has been clearly labeled as future content.",
+				[_close_option()]
+			)
+
+
+func _on_town_exit_requested() -> void:
+	if _mode != MODE_TOWN:
+		return
+	_world_state["town_position"] = world_hud.town_position()
+	_show_kingdom_map()
+
+
+func _on_town_location_action_requested(location_id: String) -> void:
+	if _mode != MODE_TOWN:
+		return
+	_world_state["town_position"] = world_hud.town_position()
+	var location := _worlds.location_by_id(location_id)
+	match String(location.get("type", "")):
+		"store":
+			_show_store_service()
+		"guild", "quests":
+			_show_quest_service(String(location.get("display_name", "CONTRACT BOARD")))
+		"bar":
+			_open_town_bar()
+		"safe_room":
+			_heal_party()
+			_save_profile(true)
+			world_hud.show_service(
+				"ANCHOR HOUSE",
+				"Safe room  |  Hearthfold threshold  |  Atomic profile verified",
+				"[color=#87e8d7][b]The party is fully healed. Owned gear, purchases, map position, lore, quests, and relationships are saved.[/b][/color]\n\nFuture room upgrades will travel with the party. This foundation applies no rent, capacity gate, or upgrade loss.",
+				[_close_option()]
+			)
+		"information":
+			_discover_and_show_lore(location_id)
+		_:
+			world_hud.show_service(
+				"COMMON ROOF PLAZA",
+				"Safe social area  |  Persistent civic relationships",
+				"A guild courier argues with a fungus about right-of-way while a municipal monster sells soup under a valid temporary permit. Nobody attacks because this is a social area and the soup is surprisingly good.\n\n[color=#f0ca73][b]PICKET:[/b][/color] Civilization is combat with chairs and appeal procedures.",
+				[{"label": "LISTEN FOR LOCAL LORE", "action": "discover_lore", "payload": {"source_id": location_id}}, _close_option()]
+			)
+
+
+func _on_world_service_choice_selected(action: String, payload: Dictionary) -> void:
+	match action:
+		"close":
+			world_hud.hide_service()
+		"event_choice":
+			var result := _worlds.resolve_event(_world_state, String(payload.get("site_id", "")), String(payload.get("choice_id", "")))
+			_world_state = result.get("state", _world_state)
+			_save_profile(true)
+			_show_message_service("EVENT DECISION FILED" if bool(result.get("resolved", false)) else "EVENT LEFT AVAILABLE", "Consequences persist. Unresolved content does not expire.", String(result.get("message", "The event remains.")))
+		"buy_item":
+			var result := _worlds.buy_item(_world_state, String(payload.get("item_id", "")))
+			_world_state = result.get("state", _world_state)
+			if bool(result.get("ok", false)):
+				_inventory.append(String(result.get("item_id", "")))
+			_save_profile(true)
+			_show_store_service(String(result.get("message", "Purchase request processed.")))
+		"accept_quest":
+			var result := _worlds.accept_quest(_world_state, String(payload.get("quest_id", "")))
+			_world_state = result.get("state", _world_state)
+			_save_profile(true)
+			_show_quest_service("CONTRACT BOARD", String(result.get("message", "Contract request processed.")))
+		"begin_dungeon":
+			_enter_dungeon_from_world(String(payload.get("site_id", "")))
+		"discover_lore":
+			_discover_and_show_lore(String(payload.get("source_id", "world.service")))
+		"return_kingdom":
+			_show_kingdom_map()
+
+
+func _show_event_service(site_id: String) -> void:
+	var site := _worlds.site_by_id(site_id)
+	var resolved_choice := String((_world_state.get("resolved_events", {}) as Dictionary).get(site_id, ""))
+	var body := "%s\n\n[color=#9eb1b3]This situation waits indefinitely. Choices state their consequences before commitment.[/color]" % String(site.get("description", ""))
+	var options: Array = []
+	for raw_choice in site.get("choices", []):
+		var choice: Dictionary = raw_choice
+		var choice_id := String(choice.get("id", ""))
+		options.append({
+			"label": "%s%s" % [String(choice.get("label", "CHOOSE")).to_upper(), "  [FILED]" if choice_id == resolved_choice else ""],
+			"action": "event_choice",
+			"payload": {"site_id": site_id, "choice_id": choice_id},
+			"disabled": not resolved_choice.is_empty(),
+			"tooltip": String(choice.get("result", "")),
+		})
+	options.append(_close_option())
+	world_hud.show_service(String(site.get("display_name", "PERSISTENT EVENT")), "Visible choice outcomes  |  No expiration", body, options)
+
+
+func _show_dungeon_briefing(site_id: String) -> void:
+	var site := _worlds.site_by_id(site_id)
+	var quest_id := String(site.get("quest_id", ""))
+	var quest := _worlds.quest_by_id(quest_id)
+	var quest_status := String((_world_state.get("quests", {}) as Dictionary).get(quest_id, "not accepted"))
+	world_hud.show_service(
+		String(site.get("display_name", "DUNGEON")),
+		"First-person shaded pixel dungeon  |  Stopped-time party combat",
+		"%s\n\n[color=#f0ca73][b]%s[/b][/color]\n%s\n\nQuest status: %s\nReward contract: %s\n\nThe party returns to this exact hex. Owned items are never deleted on defeat." % [site.get("description", ""), quest.get("display_name", "REGIONAL EXPEDITION"), quest.get("summary", "Enter and return."), quest_status.replace("_", " ").capitalize(), quest.get("reward", "Baseline loot")],
+		[{"label": "BEGIN NEW EXPEDITION", "action": "begin_dungeon", "payload": {"site_id": site_id}}, _close_option()]
+	)
+
+
+func _enter_dungeon_from_world(site_id: String) -> void:
+	var result := _worlds.begin_dungeon(_world_state, site_id)
+	if not bool(result.get("ok", false)):
+		_show_message_service("DUNGEON ENTRY FAILED", "The route remains available", String(result.get("message", "Entry failed.")))
+		return
+	_world_state = result.get("state", _world_state)
+	world_hud.hide_all()
+	hud.show()
+	_start_new_expedition(true)
+	hud.push_line("PICKET", "Kingdom route anchored. The Hearthfold can return us to this exact entrance hex when the expedition is secured.")
+	_save_profile(true)
+
+
+func _return_to_kingdom() -> void:
+	if _mode != MODE_HEARTHFOLD:
+		return
+	var result := _worlds.complete_dungeon_return(_world_state)
+	_world_state = result.get("state", _world_state)
+	hud.hide_hearthfold()
+	_show_kingdom_map()
+	_show_message_service("KINGDOM RETURN FILED", "Exact-position restoration  |  Persistent rewards", String(result.get("message", "Returned to the kingdom.")))
+
+
+func _show_store_service(notice: String = "") -> void:
+	var store: Dictionary = _worlds.definition.get("store", {})
+	var resources: Dictionary = _world_state.get("resources", {})
+	var purchased: Array = _world_state.get("purchases", [])
+	var options: Array = []
+	for raw_stock in store.get("stock", []):
+		var stock: Dictionary = raw_stock
+		var item_id := String(stock.get("item_id", ""))
+		var item := Content.get_item(item_id)
+		var price := int(stock.get("price", 0))
+		var owned_stock := purchased.has(item_id)
+		options.append({
+			"label": "%s  |  %s  |  %d MARKS%s" % [item.get("display_name", item_id), String(item.get("rarity", "common")).to_upper(), price, "  |  PURCHASED" if owned_stock else ""],
+			"action": "buy_item",
+			"payload": {"item_id": item_id},
+			"disabled": owned_stock or int(resources.get("marks", 0)) < price,
+			"tooltip": "%s  %s" % [item.get("description", ""), item.get("power_text", "")],
+		})
+	options.append(_close_option())
+	var body := "%s%s\n\n[color=#9eb1b3]Purchases enter the uncapped Archive immediately. Stock has no real-money purchase path and does not disappear for being ignored.[/color]" % [("[color=#87e8d7]%s[/color]\n\n" % notice) if not notice.is_empty() else "", "Available Marks: %d" % int(resources.get("marks", 0))]
+	world_hud.show_service(String(store.get("display_name", "GENERAL STORE")), "Regional stock  |  Inspect tooltips for powers", body, options)
+
+
+func _show_quest_service(source_title: String, notice: String = "") -> void:
+	var statuses: Dictionary = _world_state.get("quests", {})
+	var options: Array = []
+	var body_lines := PackedStringArray()
+	if not notice.is_empty():
+		body_lines.append("[color=#87e8d7]%s[/color]" % notice)
+	for raw_quest in _worlds.definition.get("quests", []):
+		var quest: Dictionary = raw_quest
+		var quest_id := String(quest.get("id", ""))
+		var status := String(statuses.get(quest_id, "available"))
+		body_lines.append("[color=#f0ca73][b]%s[/b][/color]  [%s]\n%s\nReward: %s" % [quest.get("display_name", quest_id), status.replace("_", " ").to_upper(), quest.get("summary", ""), quest.get("reward", "")])
+		options.append({
+			"label": "%s  |  %s" % [quest.get("display_name", quest_id), status.replace("_", " ").to_upper()],
+			"action": "accept_quest",
+			"payload": {"quest_id": quest_id},
+			"disabled": status != "available",
+			"tooltip": "%s  Consequence: %s" % [quest.get("risk", "Risk visible"), quest.get("consequence", "Consequences persist")],
+		})
+	options.append(_close_option())
+	world_hud.show_service(source_title.to_upper(), "Six visible opportunities  |  No real-world deadlines", "\n\n".join(body_lines), options)
+
+
+func _discover_and_show_lore(source_id: String) -> void:
+	var result := _worlds.discover_lore(_world_state, source_id)
+	_world_state = result.get("state", _world_state)
+	_save_profile(true)
+	var lore: Dictionary = result.get("lore", {})
+	world_hud.show_service(
+		"LORE SAUCE  |  %s" % String(lore.get("category", "regional")).to_upper(),
+		"Reliability: %s  |  %s" % [String(lore.get("reliability", "unknown")).to_upper(), "NEW ARCHIVE ENTRY" if bool(result.get("new", false)) else "ALREADY ARCHIVED"],
+		"[color=#e8d79d][b]%s[/b][/color]\n\n[color=#82d9cc]Usable hint:[/color] %s\n\n[color=#9eb1b3]%s[/color]" % [lore.get("text", "No fragment was returned."), lore.get("hint", "No mechanical hint filed."), result.get("message", "")],
+		[_close_option()]
+	)
+
+
+func _show_world_archive_summary() -> void:
+	var unique := {}
+	for item_id in _inventory:
+		unique[item_id] = true
+	world_hud.show_service(
+		"THE ARCHIVE",
+		"Uncapped persistent inventory  |  Full equipment screen available inside the dungeon",
+		"Entries: %d\nUnique items: %d\nDiscovered lore: %d\n\nNothing is deleted for traveling, losing a fight, changing zones, or leaving an event unresolved. The strategic-layer equipment shortcut is scheduled after this vertical proof; all current equipment remains active and saved." % [_inventory.size(), unique.size(), (_world_state.get("discovered_lore", []) as Array).size()],
+		[_close_option()]
+	)
+
+
+func _open_town_bar() -> void:
+	if not _rivals.can_visit_bar(_rival_state, _run_index):
+		world_hud.show_service(
+			"THE BENT PIPE",
+			"Semi-safe bar  |  Weapons checked  |  Insults unrestricted",
+			"The regulars exchange route rumors, monster impressions, and one detailed theory about why the east tap is legally a demigod.\n\nNo recurring rival has a new authored conversation this expedition. The bar remains open anyway because social spaces do not exist only to dispense quests.",
+			[{"label": "ASK THE REGULARS FOR LORE", "action": "discover_lore", "payload": {"source_id": "town.bent_pipe"}}, _close_option()]
+		)
+		return
+	_world_return_view = "town"
+	world_hud.hide_all()
+	hud.show()
+	_mode = MODE_BAR
+	_social_context = "bar"
+	_build_bent_pipe_world()
+	_show_bent_pipe_conversation()
+	_save_profile(true)
+
+
+func _show_message_service(title_text: String, subtitle_text: String, message: String) -> void:
+	world_hud.show_service(title_text, subtitle_text, message, [_close_option()])
+
+
+func _close_option() -> Dictionary:
+	return {"label": "CLOSE", "action": "close", "payload": {}}
+
+
+func _heal_party() -> void:
+	for member in _party:
+		member["hp"] = member.get("max_hp", member.get("hp", 1))
+		member["guard"] = 0
 
 
 func _open_bent_pipe() -> void:
@@ -713,8 +1049,12 @@ func _close_bent_pipe() -> void:
 	_place_camera(false)
 	if _picket_visual != null:
 		_picket_visual.show()
-	_mode = MODE_HEARTHFOLD
-	_open_hearthfold()
+	if _world_return_view == "town":
+		_world_return_view = ""
+		_show_town_map()
+	else:
+		_mode = MODE_HEARTHFOLD
+		_open_hearthfold()
 
 
 func _build_bent_pipe_world() -> void:
@@ -1285,6 +1625,7 @@ func _save_profile(automatic: bool) -> void:
 		"inventory": _inventory.duplicate(),
 		"equipment": _equipment_state.duplicate(true),
 		"rival": _rival_state.duplicate(true),
+		"world": _world_state.duplicate(true),
 	}
 	var result := Saves.write_atomic(profile)
 	if not result.get("ok", false):
@@ -1331,6 +1672,7 @@ func _load_crawler_profile(report_result: bool) -> bool:
 	_ensure_demo_archive()
 	_equipment_state = _equipment.normalize_state(data.get("equipment", _equipment_state), Content.all_items())
 	_rival_state = _rivals.normalize_state(data.get("rival", _rival_state))
+	_world_state = _worlds.normalize_state(data.get("world", {}))
 	_social_context = ""
 	_active_encounter_id = ""
 	_active_encounter_modifiers.clear()
@@ -1344,5 +1686,13 @@ func _load_crawler_profile(report_result: bool) -> bool:
 	_mode = MODE_EXPLORATION
 	hud.clear_feed()
 	hud.push_line("SYSTEM", "Crawler profile restored%s." % (" from backup" if result.get("recovered_from_backup", false) else ""))
-	_enter_current_room()
+	match String(_world_state.get("active_view", "kingdom")):
+		"town":
+			_show_town_map()
+		"dungeon":
+			world_hud.hide_all()
+			hud.show()
+			_enter_current_room()
+		_:
+			_show_kingdom_map()
 	return true

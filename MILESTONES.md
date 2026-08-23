@@ -150,6 +150,23 @@ Implement the focused recurring-actor and social-combat proof in `M04B_DIALOGUE_
 - Save/load preserves the actor record, bounded memories, relationships, growth, appearance history, bar visits, and current promise.
 - Automated checks, native macOS inspection, export verification, evidence documents, and remote `main` publication pass.
 
+## M04C - Kingdom map and living-world proof
+
+**Depends on:** M04B runnable proof.
+
+Implement the hybrid strategic-world vertical slice in `M04C_KINGDOM_MAP_LIVING_WORLD.md`. Add one deterministic top-down hex kingdom region, one explorable settlement map, resources, events, quests, stores, a guild hall, a semi-safe bar, safe anchors, information provenance, deterministic Lore Sauce, and a visible entrance into the existing first-person crawler.
+
+**Acceptance criteria**
+
+- The party travels across a persistent hex map with fog of discovery, roads, terrain, sites, a jurisdiction border, and no movement-point cap.
+- Latchmarket Edge provides top-down movement and physically distinct store, guild, bar, safe-anchor, contract, and information locations.
+- Resources, purchases, lore, quest state, discoveries, Strategic Pulses, active view, and exact map position survive atomic save and profile restore.
+- Site and quest panels disclose safety, provenance, reward, risk, requirements, and consequences before commitment.
+- An accepted guild contract routes through a visible kingdom-map dungeon entrance into the existing first-person crawler and returns to the exact entrance hex.
+- World Marginalia uses deterministic authored fragments, labels reliability, avoids immediate repetition, and never randomizes critical mechanics.
+- Existing Archive, equipment, rival memory, dialogue, combat, rewards, and anti-frustration guarantees remain intact across every presentation mode.
+- Automated checks, native macOS inspection, exports, fresh-checkout proof, evidence documents, and remote `main` publication pass.
+
 # Phase 1: Combat proof
 
 ## M05 - Combat resources and damage pipeline

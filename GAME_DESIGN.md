@@ -4,7 +4,7 @@
 
 The player is a **Claimant**, one of the rare people able to bind Underworks relics without being rewritten by them. A Claimant explores the Living Expanse, takes contracts, intervenes in local conflicts, hunts impossible gear, attracts divine patrons, and turns a tiny pocket shelter into the Hearthfold.
 
-The game is a first-person party crawler first. Story explains systems and gives places meaning, but the repeatable spine is procedural exploration, stopped-time tactical combat, loot, collection, party experimentation, zone change, and home improvement.
+The game is a hybrid strategic-world party RPG. The party travels through top-down kingdom maps, explores closer settlement maps, and enters first-person procedural dungeons and stopped-time tactical combat. The repeatable spine is travel, discovery, social choice, procedural exploration, combat, loot, collection, party experimentation, zone change, and home improvement.
 
 ### Nested loops
 
