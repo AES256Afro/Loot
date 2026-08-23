@@ -4,8 +4,8 @@
 
 | Topic | Current decision | Reason |
 | --- | --- | --- |
-| World structure | Persistent zones connected by anchors | Supports relaxed exploration and distinct ecology without timed floors. |
-| Genre | First-person party dungeon crawler | The user approved a more scalable crawler format for procedural zones, massive loot breadth, party builds, and reactive writing. |
+| World structure | Persistent kingdom maps and zones connected by roads and anchors | Supports strategic top-down travel, settlements, distinct ecology, and relaxed return play without timed floors. |
+| Genre | Hybrid top-down open-world party RPG with first-person dungeon crawling | Kingdom travel, towns, resources, events, and social play use strategic or settlement maps; procedural dungeons and stopped-time combat retain the proven first-person presentation. |
 | Combat cadence | Fully stopped plan-and-resolve rounds | The player may inspect indefinitely, choose one action per living party member, preview enemy intentions, and explicitly resolve the exchange. |
 | Visual direction | Shaded lo-fi pixel presentation over low-resolution 3D | Preserves spatial dungeon atmosphere and colored lighting while keeping enemy, room, item, and zone production scalable. |
 | Primary mode | Single-player offline first | Keeps the core game durable and prevents networking from blocking the slice. |
@@ -26,6 +26,8 @@
 | Offline world | Authoritative world, NPC, relationship, and situation state freezes while the game is closed | Removes login pressure and prevents the player returning to losses they could not observe or influence. |
 | Memory Graph | Typed local records and bounded repository queries | Preserves relationship, rumor, causality, and callback power without requiring Neo4j or a network service. |
 | Situation generation | Authored definitions, hard filters, deterministic relevance, active budgets, and recovery | Creates emergent combinations without free-form plots, expiring emergencies, or content lockout. |
+| World-map cadence | Hex travel with deterministic Strategic Pulses and no movement-point cap | Preserves readable adventure-map choices without forced end-turn waiting or travel exhaustion. |
+| World geography | Authored kingdom and settlement foundations with seeded local sites and procedural dungeons | Keeps capitals, roads, towns, borders, and histories memorable while retaining replayable discoveries and lairs. |
 | Named NPC simulation | Authored activity states, meaningful relationship edges, and protected successor contracts | Characters can move and change while services, rewards, and coherent characterization remain safe. |
 | Monetization | Premium game, no paid randomized rewards | Matches the anti-frustration promise. |
 | IP boundary | Original setting, names, characters, dialogue, items, and lore | Genre mechanics can inspire structure, but protected expression is not production content. |
@@ -72,7 +74,7 @@ Some pressure concepts may later be prototyped as clearly labeled, reversible ch
 2. Low-resolution 3D geometry plus pixel-styled creatures produces a coherent shaded lo-fi look rather than feeling like an ordinary 3D game under a filter.
 3. One profile can unlock all Disciplines, with loadout commitment occurring per expedition and party member.
 4. The Hearthfold is entered through a short transition instead of existing as a physically seamless room behind every door.
-5. Zones use authored macro layouts plus variable encounters and state, not fully procedural terrain.
+5. Kingdoms and zones use authored macro layouts plus variable encounters and state, not fully procedural terrain.
 6. Humor is entertaining when it reacts specifically, remembers selectively, changes real systems, and can be tuned rather than speaking continuously.
 7. Players prefer a field overflow workflow to encumbrance or destructive item limits.
 8. Targeted loot and bad-luck protection do not remove the thrill of rare drops.

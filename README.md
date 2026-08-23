@@ -1,6 +1,6 @@
 # LOOT: The Living Expanse
 
-`LOOT: The Living Expanse` is the working title for an original first-person pixel dungeon crawler about exploring enormous living dungeon-zones, commanding a bizarre party through stopped-time choice combat, collecting an absurd amount of gear, and upgrading a pocket refuge that follows the player across the world.
+`LOOT: The Living Expanse` is the working title for an original hybrid party RPG about traveling persistent top-down kingdom maps, exploring living settlements and social spaces, descending into first-person pixel dungeon-zones, commanding a bizarre party through stopped-time choice combat, collecting an absurd amount of gear, and upgrading a pocket refuge that follows the player across the world.
 
 The intended feeling is a collision of:
 
@@ -15,7 +15,7 @@ The project can use high-level genre inspiration, but it will not copy protected
 
 ## Current status
 
-The approved first-person shaded pixel crawler is the runnable main scene. M04A expands the six-room Gutterbloom foundation with 32 original equipment definitions, an uncapped Archive, two persistent party loadouts, 18 simultaneously equipped law hooks, typed magnitude-aware hit reactions, electrical paper-doll animation, Taunt-driven targeting, monster speech, and more than 120 authored conditional combat lines and exchanges. M04B adds a persistent recurring actor, bounded typed defeat memory, five relationship pressures, three visible social stats, deterministic pre-combat choices, combat prevention and modification, an enemy-to-ally transition, and The Bent Pipe semi-safe bar where shared danger can become friendship. Generated project-owned portraits, enemies, equipment icons, and dungeon materials move the live composition toward the approved promo. The implementation is covered by 81 automated assertions plus a completed two-expedition native macOS acceptance route; player feel remains a human tuning gate. The focused contracts are [M04A_LOOT_CHANGES_PARTY.md](M04A_LOOT_CHANGES_PARTY.md) and [M04B_DIALOGUE_CHANGES_ENCOUNTER.md](M04B_DIALOGUE_CHANGES_ENCOUNTER.md).
+The runnable main scene now opens on the persistent Gutterbloom Reach kingdom map and routes into both Latchmarket Edge and the established first-person shaded pixel crawler. M04A provides 32 original equipment definitions, an uncapped Archive, two persistent party loadouts, 18 simultaneously equipped law hooks, typed magnitude-aware hit reactions, electrical paper-doll animation, Taunt-driven targeting, monster speech, and more than 120 authored conditional combat lines and exchanges. M04B adds Scrip as a persistent recurring actor, bounded typed defeat memory, visible deterministic social checks, encounter-changing dialogue, an enemy-to-friend route, and The Bent Pipe semi-safe bar. M04C adds a deterministic 14 by 10 hex kingdom, fogged discovery, uncapped strategic travel, Latchmarket's walkable town map, seven named services, ten regional sites, six no-deadline quests, four store purchases, twelve deterministic Lore Sauce fragments, and exact-position dungeon returns. The implementation is covered by 109 automated assertions plus native macOS interaction acceptance across kingdom, town, store, quest, and dungeon modes. Player feel remains a human tuning gate. The focused contracts are [M04A_LOOT_CHANGES_PARTY.md](M04A_LOOT_CHANGES_PARTY.md), [M04B_DIALOGUE_CHANGES_ENCOUNTER.md](M04B_DIALOGUE_CHANGES_ENCOUNTER.md), and [M04C_KINGDOM_MAP_LIVING_WORLD.md](M04C_KINGDOM_MAP_LIVING_WORLD.md).
 
 ## Product assumptions
 
@@ -28,9 +28,16 @@ The approved first-person shaded pixel crawler is the runnable main scene. M04A 
 - Business model: premium game. Reward caches are earned in play and have visible reward rules. No real-money randomized loot boxes.
 - Persistence: local profiles first, export/import and rotating backups, with optional cloud support later.
 
-## The first playable target
+## The current playable route
 
-The current M00 playable is a compact expedition in **The Gutterbloom**, a fungal sewer-wildland growing beneath a broken trade city. It includes:
+The current playable begins above the dungeon in **The Gutterbloom Reach**, then descends into a compact expedition in **The Gutterbloom**, a fungal sewer-wildland growing beneath a broken trade city. It includes:
+
+- a persistent 14 by 10 kingdom map with seeded terrain, roads, jurisdiction shading, fog of information, ten named sites, and a visible four-person party marker;
+- unlimited-distance explicit travel that advances transparent Strategic Pulses without a movement-point allowance, forced end turn, offline clock, or expiring event;
+- Latchmarket Edge as a walkable top-down town with a store, guild registry, contract board, safe room, information kiosk, social plaza, and The Bent Pipe;
+- regional Marks, Salvage, Spore Glass, and Route Seals; one-time collection without destructive overflow; store purchases that enter the uncapped Archive;
+- six visible quests with stated rewards, risks, and consequences; twelve deterministic Lore Sauce entries with reliability labels and mechanical hints;
+- a visible Courtesy Drain entrance that opens the first-person crawler and preserves its exact return hex in the same atomic profile;
 
 - a seed-reproducible six-room critical path from Underworks Intake to a Hearthfold Anchor;
 - step movement, left and right turning, backward movement, keyboard controls, and controller exploration controls;
@@ -78,6 +85,7 @@ The broader 20-to-30-minute Gutterbloom vertical slice remains the next producti
 - [PIVOT_FIRST_PERSON_CRAWLER.md](PIVOT_FIRST_PERSON_CRAWLER.md): approved camera, combat, visual direction, reusable systems, and replacement M00 slice.
 - [M04A_LOOT_CHANGES_PARTY.md](M04A_LOOT_CHANGES_PARTY.md): the playable equipment-law, Archive, loadout, visual, hit-reaction, and dialogue proof.
 - [M04B_DIALOGUE_CHANGES_ENCOUNTER.md](M04B_DIALOGUE_CHANGES_ENCOUNTER.md): the playable recurring-rival, social-choice, encounter-change, semi-safe bar, and enemy-to-friend proof.
+- [M04C_KINGDOM_MAP_LIVING_WORLD.md](M04C_KINGDOM_MAP_LIVING_WORLD.md): the playable kingdom map, Latchmarket, services, quests, lore, economy, and exact dungeon-return proof.
 - [GRUDGE_WEB.md](GRUDGE_WEB.md): recurring rivals, remembered defeats, cohorts, patrons, enemy-to-friend transitions, and dialogue-driven encounter rules.
 
 ## Build philosophy
