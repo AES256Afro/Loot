@@ -6,13 +6,14 @@ The engine spike contains no downloaded art, audio, fonts, models, textures, log
 
 All visible 3D content is assembled at runtime or in Godot scenes from built-in primitive meshes:
 
-- boxes for arena geometry and directional markers;
-- capsules for the player and enemy;
-- a sphere for the reward marker;
+- boxes for floors, walls, corridors, pipes, desks, anchor structures, and room accents;
+- low-segment spheres for fungal growths, lamps, and environmental accents;
 - Godot's default font for interface and world labels;
 - original solid-color materials authored for this project.
 
-The item names, descriptions, power text, labels, and commentary in the spike are original project text.
+The three enemy sprites and Picket portrait are original 32 by 40 pixel images generated deterministically at runtime by `scripts/visual/pixel_sprite_factory.gd`. They use project-authored shapes and colors and no external source images or model output.
+
+The item names, enemy names, descriptions, power text, labels, party names, and commentary in the crawler build are original project text.
 
 ## Production rule
 

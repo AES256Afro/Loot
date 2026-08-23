@@ -1,10 +1,10 @@
 # LOOT: The Living Expanse
 
-`LOOT: The Living Expanse` is the working title for an original 3D action RPG about exploring enormous living dungeon-zones, chasing ridiculous builds, collecting an absurd amount of gear, and upgrading a pocket refuge that follows the player across the world.
+`LOOT: The Living Expanse` is the working title for an original first-person pixel dungeon crawler about exploring enormous living dungeon-zones, commanding a bizarre party through stopped-time choice combat, collecting an absurd amount of gear, and upgrading a pocket refuge that follows the player across the world.
 
 The intended feeling is a collision of:
 
-- a readable third-person action RPG;
+- a readable first-person party crawler with fully stopped plan-and-resolve combat;
 - broad, identity-rich zones with cities, towns, faction hubs, bars, ecology, and repeatable local problems;
 - a reactive announcer and entertainment system that notices surprising player behavior;
 - combinatorial loot backed by a large library of curated legendary items and powers;
@@ -15,12 +15,14 @@ The project can use high-level genre inspiration, but it will not copy protected
 
 ## Current status
 
-A runnable M00 foundation now exists in Godot 4.7.2. It includes a third-person graybox encounter, one enemy, one attack, deterministic loot, original reactive commentary, atomic local saving, content validation, automated tests, runtime smoke checks, exported macOS, Windows, and Linux development artifacts, and passing CI. M00 remains in progress until user feel and direction review plus a native Windows run or agreed substitute. M01 acceptance evidence is complete but remains dependency-held by M00. See [IMPLEMENTATION_STATUS.md](IMPLEMENTATION_STATUS.md) for the exact boundary.
+The approved first-person shaded pixel crawler is now the runnable main scene. The replacement M00 build contains a deterministic six-room Gutterbloom expedition, cardinal first-person exploration, a four-person party, three enemy types, stopped-time command planning, visible enemy intentions, an optional environmental setup, deterministic rewards, Herald and Picket commentary, a Hearthfold endpoint, repeatable seeds, and atomic local saving. The implementation is covered by 49 automated assertions; user feel review remains a human gate. The pivot contract is defined in [PIVOT_FIRST_PERSON_CRAWLER.md](PIVOT_FIRST_PERSON_CRAWLER.md).
 
 ## Product assumptions
 
 - Platform: PC first, controller and mouse/keyboard from the first playable slice.
-- Camera: third-person over-the-shoulder, with field-of-view and camera-distance options.
+- Camera: first-person cardinal dungeon exploration with adjustable field of view, turn presentation, and motion-reduction options.
+- Combat: a four-member party chooses commands and targets while time is fully stopped, then resolves a short simultaneous exchange.
+- Art: shaded lo-fi pixel presentation built from a low-resolution 3D dungeon viewport and pixel-styled creatures.
 - Mode: single-player first. Two-to-four-player co-op is a gated post-alpha investigation, not a launch promise.
 - Engine: Godot 4.7.2 stable, pinned with the GL Compatibility renderer and typed GDScript.
 - Business model: premium game. Reward caches are earned in play and have visible reward rules. No real-money randomized loot boxes.
@@ -28,20 +30,20 @@ A runnable M00 foundation now exists in Godot 4.7.2. It includes a third-person 
 
 ## The first playable target
 
-The first vertical slice is a 20-to-30-minute repeatable expedition in **The Gutterbloom**, a fungal sewer-wildland growing beneath a broken trade city. It must include:
+The current M00 playable is a compact expedition in **The Gutterbloom**, a fungal sewer-wildland growing beneath a broken trade city. It includes:
 
-- movement, camera, dodge, light/heavy attacks, one active power, and one utility action;
-- a compact town edge, a semi-safe bar, a dangerous open route, a cave-dungeon, and a boss arena;
-- three normal enemy families, one elite mutation system, and one boss;
-- procedural drops, equipment comparison, a searchable persistent vault, and 12 curated legendary items;
-- the portable **Hearthfold** refuge with storage, healing, crafting, and one permanent upgrade;
-- Spotlight bonuses that reward risky or unusual play without reducing baseline grinding rewards;
-- **Picket**, an original brass surveyor companion with hazard marking, loot retrieval, memory, and Herald banter;
-- reactive humor and announcements with Accolades, Indignities, one promoted enemy, one delayed callback, priorities, cooldowns, subtitles, history, and independent controls;
-- **The Courtesy Drain**, a living lair whose mood changes encounters and reward categories without lowering total value;
-- a protected Reclamation Core that turns selected unwanted loot into Hearthfold growth;
-- a living-zone state that changes at least one route, resource, faction patrol, and encounter after the boss is defeated;
-- save/load, death recovery, key rebinding, controller support, basic accessibility settings, and automated data/save tests.
+- a seed-reproducible six-room critical path from Underworks Intake to a Hearthfold Anchor;
+- step movement, left and right turning, backward movement, keyboard controls, and controller exploration controls;
+- Dena the Bulwark, Moss the Hexer, Vell the Scavenger, and Ilex the Warden, each with Strike, Power, Guard, and Expose choices;
+- fully stopped planning with visible enemy targets and intentions, followed by a short deterministic resolution;
+- Filing Larvae, Pipe Goblins, and a promoted Form Auditor encounter;
+- an optional Pressure Junction setup that strengthens Vell's later Power without penalizing players who ignore it;
+- earned deterministic rewards that enter a persistent, effectively unbounded prototype Archive;
+- **Picket** and the **Herald Engine** reacting to rooms, maintenance choices, enemies, victory, defeat, and loot;
+- no combat timer, no gear loss, no reward reduction for repetition, full-party recovery on defeat, and full healing at the Hearthfold;
+- autosave, manual save/load, backup recovery, and new procedural expeditions that retain every reward.
+
+The broader 20-to-30-minute Gutterbloom vertical slice remains the next production target. It adds the settlement edge, semi-safe bar, richer procedural rooms, equipment and Archive interfaces, Spotlight and callback depth, Hearthfold upgrades, living-zone change, elite mutations, and the Rain Treasurer boss after the crawler combat foundation passes play review.
 
 ## Documents
 
@@ -67,6 +69,7 @@ The first vertical slice is a 20-to-30-minute repeatable expedition in **The Gut
 - [ENGINE_SPIKE.md](ENGINE_SPIKE.md): the M00 engine decision, observed risks, checks, and open review items.
 - [DEVELOPMENT.md](DEVELOPMENT.md): exact local setup, controls, tests, exports, saves, and project layout.
 - [ASSET_SOURCES.md](ASSET_SOURCES.md): current asset provenance and the production asset rule.
+- [PIVOT_FIRST_PERSON_CRAWLER.md](PIVOT_FIRST_PERSON_CRAWLER.md): approved camera, combat, visual direction, reusable systems, and replacement M00 slice.
 
 ## Build philosophy
 
