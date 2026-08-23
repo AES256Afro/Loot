@@ -1,0 +1,138 @@
+{
+  "schema_version": 1,
+  "actor_id": "actor.rival.gutterbloom.scrip",
+  "promotion_escape": [
+    {"speaker": "Scrip", "kind": "enemy", "line": "This defeat is being appealed through a smaller, faster door."},
+    {"speaker": "Scrip", "kind": "enemy", "line": "You have not killed me. You have created an unresolved staffing concern."},
+    {"speaker": "Scrip", "kind": "enemy", "line": "I am withdrawing until your weapons receive less persuasive representation."},
+    {"speaker": "Scrip", "kind": "enemy", "line": "The complaint hatch is not an escape route. It is an alternate chain of command."},
+    {"speaker": "Scrip", "kind": "enemy", "line": "Keep the office. The office knows what it did."},
+    {"speaker": "Scrip", "kind": "enemy", "line": "My survival has been pre-approved by me."}
+  ],
+  "return_opening": [
+    {"speaker": "Scrip", "kind": "enemy", "line": "I remember {member}, the {action}, and the regrettably educational {damage_type}."},
+    {"speaker": "Scrip", "kind": "enemy", "line": "Welcome back to {room}. I reinforced the complaint hatch and several personal opinions."},
+    {"speaker": "Scrip", "kind": "enemy", "line": "Expedition {run} was not a defeat. It was an involuntary performance review with weapons."},
+    {"speaker": "Scrip", "kind": "enemy", "line": "You used {damage_type} in {room}. I have since become professionally conductive about it."},
+    {"speaker": "Scrip", "kind": "enemy", "line": "I recognize that formation. It ends with {member} doing something administratively final."},
+    {"speaker": "Scrip", "kind": "enemy", "line": "The record says {action}. My scar says the record is underselling it."},
+    {"speaker": "Scrip", "kind": "enemy", "line": "I was promised a stronger staff. They sent a replacement and called that morale."},
+    {"speaker": "Scrip", "kind": "enemy", "line": "Before we begin, the ceiling is humming and my new supervisor is pretending not to hear it."},
+    {"speaker": "Scrip", "kind": "enemy", "line": "I have returned slightly stronger and substantially more specific."},
+    {"speaker": "Scrip", "kind": "enemy", "line": "No one leaves this office until someone explains why the furniture is armed."},
+    {"speaker": "Scrip", "kind": "enemy", "line": "You broke my seal, my desk, and a very promising sense of superiority."},
+    {"speaker": "Scrip", "kind": "enemy", "line": "I prepared a speech. Then the replacement staff wired the speech to the mains."}
+  ],
+  "cite_record_party": [
+    {"speaker": "Ilex", "kind": "party", "line": "Your own record says another fight has the survival value of decorative poison."},
+    {"speaker": "Moss", "kind": "party", "line": "We know which memory hurts. We can cite it by paragraph if necessary."},
+    {"speaker": "Dena", "kind": "party", "line": "You survived because you left. That remains the best idea you have had."},
+    {"speaker": "Vell", "kind": "party", "line": "I checked the pipes. Your escape route is still winning the argument."}
+  ],
+  "cite_record_success": [
+    {"speaker": "Scrip", "kind": "enemy", "line": "The evidence is hostile, but unfortunately admissible."},
+    {"speaker": "Scrip", "kind": "enemy", "line": "I withdraw under protest and several medically relevant memories."},
+    {"speaker": "Scrip", "kind": "enemy", "line": "Fine. The office is yours until it develops better representation."},
+    {"speaker": "Scrip", "kind": "enemy", "line": "My fear is not agreement. It is a highly qualified scheduling decision."},
+    {"speaker": "Scrip", "kind": "enemy", "line": "I concede the room, not the argument, the desk, or the good stapler."},
+    {"speaker": "Scrip", "kind": "enemy", "line": "This encounter has been canceled for compelling historical reasons."}
+  ],
+  "partnership_party": [
+    {"speaker": "Vell", "kind": "party", "line": "Your replacement supervisor plans to ground the overload through you. We offer a less fatal circuit."},
+    {"speaker": "Ilex", "kind": "party", "line": "The room will discharge. Help us stop it and everyone keeps the organs they arrived with."},
+    {"speaker": "Moss", "kind": "party", "line": "Your greed is pretending to be loyalty. We can pay it in continued existence."},
+    {"speaker": "Dena", "kind": "party", "line": "Choose quickly. The ceiling has begun making command decisions."}
+  ],
+  "partnership_success": [
+    {"speaker": "Scrip", "kind": "enemy", "line": "Temporary cooperation. Permanent survival. I accept the ratio."},
+    {"speaker": "Scrip", "kind": "enemy", "line": "I have always opposed my supervisor in the private theater of my mind."},
+    {"speaker": "Scrip", "kind": "enemy", "line": "Point me at the payroll authority and look surprised when I defect."},
+    {"speaker": "Scrip", "kind": "enemy", "line": "This is not friendship. It is a merger where nobody reads the liability section."},
+    {"speaker": "Scrip", "kind": "enemy", "line": "I will ground the first surge. You handle everyone who objects professionally."},
+    {"speaker": "Scrip", "kind": "enemy", "line": "My loyalty has encountered a more competitive offer from self-preservation."}
+  ],
+  "partnership_failure": [
+    {"speaker": "Scrip", "kind": "enemy", "line": "Tempting, but my terror has selected the familiar employer."},
+    {"speaker": "Scrip", "kind": "enemy", "line": "I decline. The replacement staff knows where I keep my unapproved lunch."},
+    {"speaker": "Scrip", "kind": "enemy", "line": "Your offer lacks a dental plan and at least one credible exit."},
+    {"speaker": "Scrip", "kind": "enemy", "line": "I prefer predictable mistreatment to entrepreneurial danger."}
+  ],
+  "taunt_party": [
+    {"speaker": "Dena", "kind": "party", "line": "Did the new title come with armor, or only a longer place to write coward?"},
+    {"speaker": "Moss", "kind": "party", "line": "I kept a culture from your old fear. It has become articulate."},
+    {"speaker": "Vell", "kind": "party", "line": "Nice reinforcement. Is it load-bearing, or does it resign when struck?"},
+    {"speaker": "Ilex", "kind": "party", "line": "Your pulse is already filing a request to leave."}
+  ],
+  "taunt_success": [
+    {"speaker": "Scrip", "kind": "enemy", "line": "I will staple that confidence to something load-bearing."},
+    {"speaker": "Scrip", "kind": "enemy", "line": "Parley terminated. Personal volume increased."},
+    {"speaker": "Scrip", "kind": "enemy", "line": "I rehearsed restraint and have misplaced every page."},
+    {"speaker": "Scrip", "kind": "enemy", "line": "You wanted initiative. Take it before I regain professional judgment."},
+    {"speaker": "Scrip", "kind": "enemy", "line": "My anger has waived the usual opening procedures."},
+    {"speaker": "Scrip", "kind": "enemy", "line": "Fine. We settle this through the ancient appeals process of hitting."}
+  ],
+  "leave_parley": [
+    {"speaker": "Dena", "kind": "party", "line": "Discussion closed. Keep your hands where the intentions panel can see them."},
+    {"speaker": "Scrip", "kind": "enemy", "line": "At last, a traditional meeting with measurable injuries."},
+    {"speaker": "Picket", "kind": "system", "line": "Parley ended voluntarily. The critical route remains embarrassingly available."},
+    {"speaker": "Scrip", "kind": "enemy", "line": "No check, no trick, no timer. Just the regrettable clarity of combat."}
+  ],
+  "ally_assist": [
+    {"speaker": "Scrip", "kind": "ally", "line": "I grounded the first surge through payroll. Payroll has noticed."},
+    {"speaker": "Scrip", "kind": "ally", "line": "Opening Guard applied. I deny understanding the heroic implications."},
+    {"speaker": "Scrip", "kind": "ally", "line": "The replacement staff is softened. Please finish the restructuring."},
+    {"speaker": "Scrip", "kind": "ally", "line": "I have damaged my coworkers in a strictly temporary capacity."},
+    {"speaker": "Vell", "kind": "party", "line": "The circuit held. I hate how employable that makes you."},
+    {"speaker": "Moss", "kind": "party", "line": "Cooperation suits you. Like a borrowed coat with suspicious pockets."}
+  ],
+  "bar_opening_rival": [
+    {"speaker": "Scrip", "kind": "enemy", "line": "Neutral ground. My grievance has checked its weapons and kept its vocabulary."},
+    {"speaker": "Scrip", "kind": "enemy", "line": "The Bent Pipe serves three drinks and seventeen interpretations of not fighting."},
+    {"speaker": "Scrip", "kind": "enemy", "line": "Sit if you must. The stool has fewer loyalties than either of us."},
+    {"speaker": "Scrip", "kind": "enemy", "line": "I am off duty, which means the paperwork is merely emotional."}
+  ],
+  "bar_opening_ally": [
+    {"speaker": "Scrip", "kind": "ally", "line": "I saved you a seat. It is not friendship; the chair was threatening witnesses."},
+    {"speaker": "Scrip", "kind": "ally", "line": "We survived together. The bar insists this creates a shared tab."},
+    {"speaker": "Scrip", "kind": "ally", "line": "My former supervisor has described me as missing equipment. I feel promoted."},
+    {"speaker": "Scrip", "kind": "ally", "line": "Temporary alliance debrief. Drinks are permanent until metabolized."}
+  ],
+  "bar_opening_friend": [
+    {"speaker": "Scrip", "kind": "ally", "line": "There you are. I saved the good booth and several bad decisions."},
+    {"speaker": "Scrip", "kind": "ally", "line": "Friend is an aggressive word. Reliable co-survivor with beverage access is accurate."},
+    {"speaker": "Scrip", "kind": "ally", "line": "I told the bartender you broke my office. She added a structural surcharge."},
+    {"speaker": "Scrip", "kind": "ally", "line": "The old defeat still hurts. The new company is an acceptable complication."}
+  ],
+  "share_booth": [
+    {"speaker": "Ilex", "kind": "party", "line": "You stood with us when the room turned lethal. Sit with us while it is merely sticky."},
+    {"speaker": "Scrip", "kind": "ally", "line": "A second voluntary association. This is becoming statistically sincere."},
+    {"speaker": "Dena", "kind": "party", "line": "No contracts. No ownership. Show up when you say you will."},
+    {"speaker": "Scrip", "kind": "ally", "line": "Then I accept friendship under the terrifying doctrine of plain meaning."},
+    {"speaker": "Moss", "kind": "party", "line": "Welcome. We insult each other because the alternative is emotional paperwork."},
+    {"speaker": "Scrip", "kind": "ally", "line": "I have never felt less regulated. It is appalling and somewhat nice."}
+  ],
+  "paid_neutrality": [
+    {"speaker": "Vell", "kind": "party", "line": "We offer profitable neutrality, paid in route information and not hitting you."},
+    {"speaker": "Scrip", "kind": "enemy", "line": "Not being hit has matured into one of my strongest markets."},
+    {"speaker": "Scrip", "kind": "enemy", "line": "Neutrality accepted. My grievance remains on retainer but off the schedule."},
+    {"speaker": "Picket", "kind": "system", "line": "Paid neutrality recorded. No owned item was surrendered or quietly reclassified."}
+  ],
+  "buy_information": [
+    {"speaker": "Vell", "kind": "party", "line": "Tell us which valve the replacement staff is afraid to label."},
+    {"speaker": "Scrip", "kind": "ally", "line": "Second blue wheel past the cistern. Turn it until management becomes audible."},
+    {"speaker": "Picket", "kind": "system", "line": "Valve route learned. The next expedition begins with the pressure option revealed, not mandatory."},
+    {"speaker": "Scrip", "kind": "ally", "line": "Payment is one future drink and continued discretion about my competence."}
+  ],
+  "trade_insults": [
+    {"speaker": "Moss", "kind": "party", "line": "You look like a rejected form learned to resent handwriting."},
+    {"speaker": "Scrip", "kind": "enemy", "line": "You smell like a basement won custody of a witch."},
+    {"speaker": "Dena", "kind": "party", "line": "Both acceptable. Neither load-bearing. Continue."},
+    {"speaker": "Scrip", "kind": "enemy", "line": "Respect increased against my better administrative judgment."}
+  ],
+  "bar_leave": [
+    {"speaker": "Scrip", "kind": "enemy", "line": "Leave, then. The neutral stool will miss your tactical posture."},
+    {"speaker": "Picket", "kind": "system", "line": "Bar visit concluded without violence, theft, timers, or mandatory emotional progress."},
+    {"speaker": "Scrip", "kind": "enemy", "line": "Our relationship remains complicated and therefore properly documented."},
+    {"speaker": "Marda", "kind": "system", "line": "Come back when someone has a better story or worse judgment."}
+  ]
+}

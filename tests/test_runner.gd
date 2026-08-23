@@ -14,6 +14,7 @@ func _initialize() -> void:
 	_test_stopped_time_combat()
 	_test_equipment_changes_the_party()
 	_test_reactive_dialogue()
+	_test_rival_memory_and_social_encounters()
 	_test_pixel_sprite_factory()
 	_test_event_stream()
 	_test_atomic_save_and_backup_recovery()
@@ -228,6 +229,59 @@ func _test_reactive_dialogue() -> void:
 	_assert(not electric_reactions.is_empty() and String(electric_reactions[0].get("speaker", "")) == "Vell", "Electrical damage selects a victim-specific reaction instead of a generic hit line.")
 	var taunts := dialogue.taunt(1, "Form Auditor")
 	_assert(taunts.size() >= 2 and String(taunts[1].get("kind", "")) == "enemy", "Taunt produces party dialogue and an enemy response while changing combat state separately.")
+
+
+func _test_rival_memory_and_social_encounters() -> void:
+	var rivals := RivalService.new()
+	_assert(rivals.validate().is_empty(), "Scrip's recurring-actor dialogue and required categories validate.")
+	_assert(rivals.line_count() >= 90, "The Scrip proof adds at least 90 authored rival, parley, ally, and bar lines.")
+	var empty_state := rivals.create_default_state()
+	_assert(not rivals.has_actor(empty_state), "A clean profile does not invent a recurring actor before a qualifying defeat.")
+	var defeat_context := {
+		"run_index": 2,
+		"seed": 20_282_580,
+		"room_role": "Promoted Office",
+		"finisher_member": "Moss",
+		"finishing_action": "power",
+		"damage_type": "decay",
+		"pressure_participated": true,
+		"taunt_participated": false,
+		"critical_participated": true,
+		"named_law_participated": true,
+	}
+	var promotion := rivals.promote_form_auditor(empty_state, defeat_context)
+	var promoted_state: Dictionary = promotion.get("state", {})
+	var scrip := rivals.actor(promoted_state)
+	_assert(promotion.get("promoted", false) and String(scrip.get("display_name", "")).contains("Scrip"), "A qualifying Form Auditor defeat visibly promotes the single proof actor.")
+	var memories: Array = scrip.get("memories", [])
+	var memory: Dictionary = memories[0] if not memories.is_empty() else {}
+	_assert(memories.size() == 1 and memory.get("finisher_member") == "Moss" and memory.get("damage_type") == "decay", "The actor stores a bounded typed defeat summary with the actual finisher and damage type.")
+	_assert(not rivals.should_open_parley(promoted_state, 2) and rivals.should_open_parley(promoted_state, 3), "Scrip cannot return in the same expedition but becomes eligible in a later Promoted Office.")
+	var opening_text := ""
+	for utterance in rivals.return_opening(promoted_state):
+		opening_text += " " + String((utterance as Dictionary).get("line", ""))
+	_assert(opening_text.contains("Moss") or opening_text.contains("Decay") or opening_text.contains("Promoted Office"), "The return opening accurately cites stored defeat facts instead of invented history.")
+	var options := rivals.parley_options(promoted_state)
+	_assert(options.size() == 4 and String(options[0].get("prediction", "")) == "PASS", "Return parley exposes four choices and a deterministic stat prediction before commitment.")
+	_assert(String(rivals.format_option(options[0])).contains("INSIGHT 5") and String(rivals.format_option(options[0])).contains("vs  6"), "The player-facing option explains stat, relationship contribution, total, and difficulty.")
+	var cited := rivals.resolve_parley(promoted_state, "cite_record")
+	_assert(cited.get("ok", false) and cited.get("outcome") == RivalService.OUTCOME_SKIP_COMBAT, "Citing the remembered record can end combat without removing the encounter reward contract.")
+	var partnered := rivals.resolve_parley(promoted_state, "offer_partnership")
+	_assert(partnered.get("outcome") == RivalService.OUTCOME_ALLY_COMBAT and (partnered.get("modifiers", {}) as Dictionary).get("ally_assist", false), "A motive-compatible partnership removes Scrip from the enemy side and changes opening combat state.")
+	var allied_state := rivals.complete_shared_danger(partnered.get("state", {}))
+	var bar_options := rivals.bar_options(allied_state)
+	_assert(bar_options.size() == 5 and bar_options[0].get("available", false), "Surviving shared danger unlocks the follow-up booth conversation at the semi-safe bar.")
+	var befriended := rivals.resolve_bar(allied_state, "share_booth", 3)
+	_assert(String(rivals.actor(befriended.get("state", {})).get("posture", "")) == RivalService.POSTURE_FRIEND, "Enemy-to-friend requires both shared danger and a second authored bar choice.")
+	var taunted := rivals.resolve_parley(promoted_state, "taunt_audit")
+	var taunt_modifiers: Dictionary = taunted.get("modifiers", {})
+	_assert(taunted.get("outcome") == RivalService.OUTCOME_RIVAL_COMBAT and int(taunt_modifiers.get("growth_hp", 0)) > 0 and int(taunt_modifiers.get("opening_weakened", 0)) > 0, "Taunting intensifies the returning rival while granting visible initiative advantages.")
+	var oversized_actor := scrip.duplicate(true)
+	for index in range(8):
+		oversized_actor["memories"].append(defeat_context.duplicate(true))
+	var bounded := rivals.normalize_state({"actor": oversized_actor})
+	_assert((rivals.actor(bounded).get("memories", []) as Array).size() == RivalService.MAX_MEMORIES, "Recurring memory remains bounded instead of retaining raw or unlimited transcripts.")
+	_assert(not partnered.has("inventory") and not befriended.has("inventory"), "Social resolution never receives or mutates owned inventory.")
 
 
 func _test_pixel_sprite_factory() -> void:

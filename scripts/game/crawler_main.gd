@@ -12,6 +12,8 @@ const MODE_COMBAT := "combat"
 const MODE_RESOLVING := "resolving"
 const MODE_REWARD := "reward"
 const MODE_HEARTHFOLD := "hearthfold"
+const MODE_PARLEY := "parley"
+const MODE_BAR := "bar"
 const PROFILE_MODE := "pixel_crawler"
 
 const FACING_DIRECTIONS: Array[Vector2i] = [
@@ -33,6 +35,7 @@ var _sprite_factory := PixelSpriteFactory.new()
 var _equipment := EquipmentService.new()
 var _assets := GeneratedAssetLibrary.new()
 var _dialogue := ReactiveDialogue.new()
+var _rivals := RivalService.new()
 
 var _layout: Dictionary = {}
 var _run_seed := BASE_RUN_SEED
@@ -54,6 +57,11 @@ var _inventory: Array[String] = []
 var _reward_roll_index := 0
 var _defeat_count := 0
 var _equipment_state: Dictionary = {}
+var _rival_state: Dictionary = {}
+var _social_context := ""
+var _active_encounter_id := ""
+var _active_encounter_modifiers: Dictionary = {}
+var _last_round_result: Dictionary = {}
 var _generated_nodes: Array[Node] = []
 var _enemy_visuals: Array[Sprite3D] = []
 var _enemy_visual_by_index: Dictionary = {}
@@ -68,9 +76,13 @@ func _ready() -> void:
 		hud.push_line("SYSTEM", "Content failed validation. Run tools/check.sh.")
 		return
 	_equipment_state = _equipment.create_default_state(Content.all_items())
+	_rival_state = _rivals.create_default_state()
 	for dialogue_error in _dialogue.validate():
 		push_error(dialogue_error)
 		hud.push_line("SYSTEM", dialogue_error)
+	for rival_error in _rivals.validate():
+		push_error(rival_error)
+		hud.push_line("SYSTEM", rival_error)
 	_attach_picket_to_camera()
 	if not _load_crawler_profile(false):
 		_start_new_expedition(false)
@@ -87,7 +99,9 @@ func _unhandled_input(event: InputEvent) -> void:
 			get_viewport().set_input_as_handled()
 			return
 		if event.physical_keycode in [KEY_I, KEY_ESCAPE]:
-			if hud.archive_is_open():
+			if hud.social_is_open() and event.physical_keycode == KEY_ESCAPE:
+				_on_social_choice_selected("leave_bar" if _social_context == "bar" else "end_parley")
+			elif hud.archive_is_open():
 				_close_archive()
 			elif event.physical_keycode == KEY_I:
 				_open_archive()
@@ -123,6 +137,8 @@ func _connect_hud() -> void:
 	hud.reward_closed.connect(_close_reward)
 	hud.new_expedition_requested.connect(_on_new_expedition)
 	hud.return_to_dungeon_requested.connect(_return_from_hearthfold)
+	hud.bent_pipe_requested.connect(_open_bent_pipe)
+	hud.social_choice_selected.connect(_on_social_choice_selected)
 	hud.archive_requested.connect(_open_archive)
 	hud.archive_closed.connect(_close_archive)
 	hud.archive_equip_requested.connect(_on_archive_equip_requested)
@@ -176,6 +192,10 @@ func _start_new_expedition(increment_index: bool = true) -> void:
 	_current_room = 0
 	_facing = _initial_facing()
 	_mode = MODE_EXPLORATION
+	_social_context = ""
+	_active_encounter_id = ""
+	_active_encounter_modifiers.clear()
+	_last_round_result.clear()
 	_party = _combat.create_default_party()
 	_ensure_demo_archive()
 	_enemies.clear()
@@ -189,9 +209,12 @@ func _start_new_expedition(increment_index: bool = true) -> void:
 	_place_camera(false)
 	hud.hide_hearthfold()
 	hud.hide_reward()
+	hud.hide_social()
 	hud.clear_feed()
 	hud.push_line("HERALD", "A four-person Claimant committee has entered the Gutterbloom. Consensus is not expected.")
 	hud.push_line("PICKET", "The route contains six rooms and at least seven violations. The difference is structural creativity.")
+	if bool(_rival_state.get("valve_tip", false)):
+		hud.push_line("SCRIP", "Second blue wheel past the cistern. Optional, unstable, and management-approved only after it works.")
 	GameEvents.publish(&"expedition.started", {"seed": _run_seed, "run_index": _run_index})
 	_enter_current_room()
 	_save_profile(true)
@@ -237,7 +260,11 @@ func _enter_current_room() -> void:
 	var room := _room_data(_current_room)
 	var encounter_id := String(room.get("encounter", ""))
 	if not encounter_id.is_empty() and not _cleared_rooms.has(_current_room):
-		_start_combat(encounter_id)
+		if encounter_id == "office" and _rivals.should_open_parley(_rival_state, _run_index):
+			_start_rival_parley()
+			return
+		var pending := _rivals.pending_encounter(_rival_state, _run_index) if encounter_id == "office" else {}
+		_start_combat(encounter_id, pending.get("modifiers", {}) if not pending.is_empty() else {})
 		return
 	_mode = MODE_EXPLORATION
 	_update_exploration_hud()
@@ -271,10 +298,98 @@ func _interact() -> void:
 			hud.push_line("PICKET", "No approved interaction is present. This has never stopped anyone, but it stops this prototype.")
 
 
-func _start_combat(encounter_id: String) -> void:
+func _start_rival_parley() -> void:
+	_mode = MODE_PARLEY
+	_social_context = "parley"
+	_active_encounter_id = "office"
+	_active_encounter_modifiers.clear()
+	_commands.clear()
+	var definition := Content.get_enemy(RivalService.ORIGIN_ENEMY_ID)
+	var preview_enemy := _combat.create_enemy(definition, 0)
+	_enemies = [_rivals.apply_rival_growth(preview_enemy, _rival_state, {"growth_hp": 5, "growth_damage": 1})]
+	_spawn_enemy_visuals()
+	if _picket_visual != null:
+		_picket_visual.hide()
+	var opening := _rivals.return_opening(_rival_state)
+	hud.show_social(
+		"SCRIP, REPOSSESSED AUDITOR",
+		"RETURN ENCOUNTER  |  WARNING POSTURE  |  THE REPLACEMENT OFFICE IS OVERLOADING",
+		_rivals.memory_summary(_rival_state),
+		opening,
+		_rivals.parley_options(_rival_state),
+		false
+	)
+	if not opening.is_empty():
+		_show_enemy_speech(0, String((opening[0] as Dictionary).get("line", "")))
+	GameEvents.publish(&"rival.parley_started", {"actor_id": RivalService.ACTOR_ID, "run_index": _run_index, "room_id": _current_room})
+	_save_profile(true)
+
+
+func _on_social_choice_selected(option_id: String) -> void:
+	if _social_context == "parley" and _mode == MODE_PARLEY:
+		hud.hide_social()
+		var result := _rivals.resolve_parley(_rival_state, option_id, _run_index)
+		if not result.get("ok", false):
+			hud.push_line("SYSTEM", String(result.get("message", "Social choice failed.")))
+			_start_rival_parley()
+			return
+		_rival_state = result.get("state", _rival_state)
+		_save_profile(true)
+		await _present_utterances(result.get("lines", []), 0)
+		GameEvents.publish(&"rival.parley_resolved", {"actor_id": RivalService.ACTOR_ID, "choice": option_id, "outcome": result.get("outcome", "")})
+		if String(result.get("outcome", "")) == RivalService.OUTCOME_SKIP_COMBAT:
+			_rival_state = _rivals.clear_pending_encounter(_rival_state)
+			_finish_victory({}, true)
+			return
+		_start_combat("office", result.get("modifiers", {}))
+		_save_profile(true)
+		return
+	if _social_context == "bar" and _mode == MODE_BAR:
+		hud.hide_social()
+		var bar_result := _rivals.resolve_bar(_rival_state, option_id, _run_index)
+		if not bar_result.get("ok", false):
+			hud.push_line("SYSTEM", String(bar_result.get("message", "Bar conversation failed.")))
+			_show_bent_pipe_conversation()
+			return
+		_rival_state = bar_result.get("state", _rival_state)
+		_save_profile(true)
+		await _present_utterances(bar_result.get("lines", []), 0)
+		GameEvents.publish(&"rival.bar_resolved", {"actor_id": RivalService.ACTOR_ID, "choice": option_id, "outcome": bar_result.get("outcome", "")})
+		_close_bent_pipe()
+
+
+func _start_combat(encounter_id: String, modifiers: Dictionary = {}) -> void:
 	_mode = MODE_COMBAT
+	_social_context = ""
+	_active_encounter_id = encounter_id
+	_active_encounter_modifiers = modifiers.duplicate(true)
 	_round_index = 1
-	_enemies = _build_encounter(encounter_id)
+	_enemies = _build_encounter(encounter_id, modifiers)
+	var ally_effects: Array[Dictionary] = []
+	if bool(modifiers.get("ally_assist", false)):
+		var opening_guard := int(modifiers.get("opening_guard", 0))
+		for member in _party:
+			if int(member.get("hp", 0)) > 0:
+				member["guard"] = int(member.get("guard", 0)) + opening_guard
+		var opening_damage := int(modifiers.get("opening_damage", 0))
+		for enemy_index in range(_enemies.size()):
+			var enemy: Dictionary = _enemies[enemy_index]
+			if int(enemy.get("hp", 0)) <= 0:
+				continue
+			var dealt := mini(opening_damage, int(enemy.get("hp", 0)))
+			enemy["hp"] = int(enemy.get("hp", 0)) - dealt
+			ally_effects.append({
+				"target_kind": "enemy",
+				"target_index": enemy_index,
+				"source_kind": "ally",
+				"source_index": 0,
+				"damage_type": "electric",
+				"amount": dealt,
+				"target_max_hp": int(enemy.get("max_hp", 1)),
+				"blocked": 0,
+				"critical": false,
+				"magnitude": float(dealt) / float(maxi(1, int(enemy.get("max_hp", 1)))),
+			})
 	_commands = _empty_commands()
 	_active_member = _next_unplanned_member()
 	_selected_target = _first_living_enemy()
@@ -291,16 +406,20 @@ func _start_combat(encounter_id: String) -> void:
 			hud.push_line("HERALD", "Promoted encounter: the Form Auditor has achieved management without surviving competence.")
 	GameEvents.publish(&"combat.started", {"encounter_id": encounter_id, "room_id": _current_room})
 	var opening_enemy_index := _first_living_enemy()
-	if opening_enemy_index >= 0 and opening_enemy_index < _enemies.size():
+	if opening_enemy_index >= 0 and opening_enemy_index < _enemies.size() and not bool(modifiers.get("rival_enemy", false)):
 		var opening_enemy: Dictionary = _enemies[opening_enemy_index]
 		_present_utterance(_dialogue.enemy_opening(String(opening_enemy.get("sprite_key", "filing_larva")), String(opening_enemy.get("name", "ENEMY"))), opening_enemy_index)
 	var advice := _dialogue.strategy_line()
 	if not String(advice.get("line", "")).is_empty():
 		hud.push_line(String(advice.get("speaker", "PARTY")).to_upper(), String(advice.get("line", "")))
+	if bool(modifiers.get("ally_assist", false)):
+		for utterance in _rivals.ally_assist_lines(_rival_state):
+			_present_utterance(utterance)
+		call_deferred("_play_ally_effects", ally_effects)
 	_refresh_combat_hud()
 
 
-func _build_encounter(encounter_id: String) -> Array:
+func _build_encounter(encounter_id: String, modifiers: Dictionary = {}) -> Array:
 	var ids: Array[String] = []
 	match encounter_id:
 		"nursery":
@@ -313,6 +432,8 @@ func _build_encounter(encounter_id: String) -> Array:
 	for index in range(ids.size()):
 		var definition := Content.get_enemy(ids[index])
 		result.append(_combat.create_enemy(definition, index))
+	if encounter_id == "office" and bool(modifiers.get("rival_enemy", false)) and not result.is_empty():
+		result[0] = _rivals.apply_rival_growth(result[0], _rival_state, modifiers)
 	return result
 
 
@@ -371,6 +492,7 @@ func _resolve_plan() -> void:
 				await _present_utterances(_dialogue.taunt(member_index, String(_enemies[taunt_target].get("name", "ENEMY"))), taunt_target)
 	var equipment_laws := _equipment.compile_laws(_equipment_state, Content.all_items())
 	var result := _combat.resolve_round(_party, _enemies, _commands, _round_index, _pressure_primed, equipment_laws)
+	_last_round_result = result.duplicate(true)
 	_party = result["party"]
 	_enemies = result["enemies"]
 	if result.get("environment_consumed", false):
@@ -392,7 +514,7 @@ func _resolve_plan() -> void:
 		"defeat": result.get("defeat", false),
 	})
 	if result.get("victory", false):
-		_finish_victory()
+		_finish_victory(result)
 		return
 	if result.get("defeat", false):
 		_recover_from_defeat()
@@ -405,9 +527,24 @@ func _resolve_plan() -> void:
 	_refresh_combat_hud()
 
 
-func _finish_victory() -> void:
+func _finish_victory(result: Dictionary = {}, noncombat: bool = false) -> void:
 	_cleared_rooms[_current_room] = true
+	var room_type := String(_room_data(_current_room).get("type", ""))
+	if room_type == "office" and not _rivals.has_actor(_rival_state) and not noncombat:
+		var promotion := _rivals.promote_form_auditor(_rival_state, _rival_defeat_context(result))
+		_rival_state = promotion.get("state", _rival_state)
+		for utterance in promotion.get("lines", []):
+			_present_utterance(utterance, 0)
+		if promotion.get("promoted", false):
+			hud.push_line("PICKET", "Scrip escaped through a complaint hatch. The survival was witnessed, named, and saved without retroactive ambiguity.")
+			GameEvents.publish(&"rival.promoted", {"actor_id": RivalService.ACTOR_ID, "memory": _rival_defeat_context(result)})
+	if room_type == "office" and bool(_active_encounter_modifiers.get("ally_assist", false)):
+		_rival_state = _rivals.complete_shared_danger(_rival_state)
+		hud.push_line("SCRIP", "Shared danger survived. I object to how much that resembles trust.")
+	_rival_state = _rivals.clear_pending_encounter(_rival_state)
 	_clear_enemy_visuals()
+	if noncombat:
+		hud.push_line("PICKET", "Dialogue cleared the encounter. The critical route and baseline reward remain unchanged.")
 	var reward := _reward_resolver.roll_item(Content.all_items(), _run_seed, _reward_roll_index)
 	_reward_roll_index += 1
 	if not reward.is_empty():
@@ -420,9 +557,18 @@ func _finish_victory() -> void:
 		hud.push_line("LOOT", "%s secured. Repeating encounters never reduces this baseline roll." % reward["display_name"])
 		hud.show_reward(reward, _inventory.size())
 		_mode = MODE_REWARD
-	if String(_room_data(_current_room).get("type", "")) == "office":
-		hud.push_line("HERALD", "The Auditor has been removed from office by a unanimous vote of weapons.")
-		hud.push_line("PICKET", "The minutes will record a procedural disagreement and three avoidable leaks.")
+	if room_type == "office":
+		if noncombat:
+			hud.push_line("HERALD", "The office has been closed by citation. Violence has filed a disappointed appeal.")
+			hud.push_line("PICKET", "The minutes will record an accurate memory used for an almost responsible purpose.")
+		elif bool(_active_encounter_modifiers.get("ally_assist", false)):
+			hud.push_line("HERALD", "The replacement staff has been removed by a coalition nobody authorized and everyone survived.")
+			hud.push_line("PICKET", "Shared danger is not friendship. It is, however, admissible evidence at a bar.")
+		else:
+			hud.push_line("HERALD", "The Auditor has been removed from office by a unanimous vote of weapons.")
+			hud.push_line("PICKET", "The minutes will record a procedural disagreement and three avoidable leaks.")
+	_active_encounter_modifiers.clear()
+	_active_encounter_id = ""
 	_save_profile(true)
 
 
@@ -432,6 +578,53 @@ func _close_reward() -> void:
 	hud.hide_reward()
 	_mode = MODE_EXPLORATION
 	_update_exploration_hud()
+
+
+func _rival_defeat_context(result: Dictionary) -> Dictionary:
+	var finisher_index := 0
+	var finisher_damage_type := "impact"
+	var result_enemies: Array = result.get("enemies", [])
+	var effects: Array = result.get("effects", [])
+	for reverse_index in range(effects.size() - 1, -1, -1):
+		var effect: Dictionary = effects[reverse_index]
+		if String(effect.get("target_kind", "")) != "enemy" or String(effect.get("source_kind", "")) != "party" or int(effect.get("amount", 0)) <= 0:
+			continue
+		var target_index := int(effect.get("target_index", -1))
+		if target_index != 0 or target_index >= result_enemies.size() or int((result_enemies[target_index] as Dictionary).get("hp", 1)) > 0:
+			continue
+		finisher_index = clampi(int(effect.get("source_index", 0)), 0, maxi(0, _party.size() - 1))
+		finisher_damage_type = String(effect.get("damage_type", "impact"))
+		break
+	var finishing_action := "strike"
+	if finisher_index < _commands.size() and typeof(_commands[finisher_index]) == TYPE_DICTIONARY:
+		finishing_action = String((_commands[finisher_index] as Dictionary).get("action", "strike"))
+	var taunt_participated := false
+	for command in _commands:
+		if typeof(command) == TYPE_DICTIONARY and String((command as Dictionary).get("action", "")) == CombatResolver.ACTION_TAUNT:
+			taunt_participated = true
+			break
+	var critical_participated := false
+	for raw_effect in effects:
+		if typeof(raw_effect) == TYPE_DICTIONARY and bool((raw_effect as Dictionary).get("critical", false)):
+			critical_participated = true
+			break
+	var named_law_participated := false
+	for raw_line in result.get("log", []):
+		if String(raw_line).contains("activates:"):
+			named_law_participated = true
+			break
+	return {
+		"run_index": _run_index,
+		"seed": _run_seed,
+		"room_role": "Promoted Office",
+		"finisher_member": String((_party[finisher_index] as Dictionary).get("name", "Dena")) if not _party.is_empty() else "Dena",
+		"finishing_action": finishing_action,
+		"damage_type": finisher_damage_type,
+		"pressure_participated": bool(result.get("environment_consumed", false)),
+		"taunt_participated": taunt_participated,
+		"critical_participated": critical_participated,
+		"named_law_participated": named_law_participated,
+	}
 
 
 func _recover_from_defeat() -> void:
@@ -454,13 +647,27 @@ func _open_hearthfold() -> void:
 	for member in _party:
 		member["hp"] = member["max_hp"]
 		member["guard"] = 0
+	# Keep the expedition header behind the modal synchronized with relationship
+	# changes made in The Bent Pipe.
+	_update_exploration_hud()
 	_mode = MODE_HEARTHFOLD
-	var summary := "[center][color=#8df5e5][b]EXPEDITION SECURED[/b][/color][/center]\n\nRooms discovered: %d / 6\nCombat rooms cleared: %d / 3\nArchive items: %d\nDefeats with item loss: 0\nPlanning deadlines violated: 0\n\nThe party is fully healed. Return to inspect this seed, or begin a new deterministic topology while retaining every reward." % [
+	var current_actor := _rivals.actor(_rival_state)
+	var relationship_line := "No recurring actor has entered the local relationship ledger."
+	if not current_actor.is_empty():
+		relationship_line = "%s  |  %s  |  Appearances %d  |  Bar visits %d" % [
+			current_actor.get("display_name", "Scrip"),
+			String(current_actor.get("posture", "unknown")).replace("_", " ").capitalize(),
+			int(current_actor.get("appearance_count", 0)),
+			int(current_actor.get("bar_visits", 0)),
+		]
+	var summary := "[center][color=#8df5e5][b]EXPEDITION SECURED[/b][/color][/center]\n\nRooms discovered: %d / 6\nCombat rooms cleared: %d / 3\nArchive items: %d\nDefeats with item loss: 0\nPlanning deadlines violated: 0\n\n[color=#f0c96f][b]GRUDGE WEB PROOF[/b][/color]\n%s\n\nThe party is fully healed. Return to this seed, visit neutral ground when available, or begin another topology with every reward retained." % [
 		_visited_rooms.size(),
 		_cleared_rooms.size(),
 		_inventory.size(),
+		relationship_line,
 	]
-	hud.show_hearthfold(summary)
+	var bar_available := _rivals.can_visit_bar(_rival_state, _run_index)
+	hud.show_hearthfold(summary, bar_available, "Scrip is available under neutral-ground rules." if bar_available else "The Bent Pipe has no new recurring-actor conversation this expedition.")
 	GameEvents.publish(&"hearthfold.entered", {"run_index": _run_index})
 	_save_profile(true)
 
@@ -471,6 +678,101 @@ func _return_from_hearthfold() -> void:
 	hud.hide_hearthfold()
 	_mode = MODE_EXPLORATION
 	_update_exploration_hud()
+
+
+func _open_bent_pipe() -> void:
+	if _mode != MODE_HEARTHFOLD or not _rivals.can_visit_bar(_rival_state, _run_index):
+		hud.push_line("PICKET", "The Bent Pipe is open, but no recurring guest has filed a new conversation this expedition.")
+		return
+	hud.hide_hearthfold()
+	_mode = MODE_BAR
+	_social_context = "bar"
+	_build_bent_pipe_world()
+	_show_bent_pipe_conversation()
+	GameEvents.publish(&"rival.bar_entered", {"actor_id": RivalService.ACTOR_ID, "run_index": _run_index})
+	_save_profile(true)
+
+
+func _show_bent_pipe_conversation() -> void:
+	var current_actor := _rivals.actor(_rival_state)
+	hud.show_social(
+		"THE BENT PIPE  |  SEMI-SAFE BAR",
+		"%s  |  %s  |  VIOLENCE IS OUTSIDE'S ADMINISTRATIVE PROBLEM" % [current_actor.get("display_name", "Scrip"), String(current_actor.get("posture", "unknown")).replace("_", " ").to_upper()],
+		_rivals.memory_summary(_rival_state),
+		_rivals.bar_opening(_rival_state),
+		_rivals.bar_options(_rival_state),
+		true
+	)
+
+
+func _close_bent_pipe() -> void:
+	hud.hide_social()
+	_social_context = ""
+	_clear_enemy_visuals()
+	_build_dungeon()
+	_place_camera(false)
+	if _picket_visual != null:
+		_picket_visual.show()
+	_mode = MODE_HEARTHFOLD
+	_open_hearthfold()
+
+
+func _build_bent_pipe_world() -> void:
+	for node in _generated_nodes:
+		if is_instance_valid(node):
+			node.free()
+	_generated_nodes.clear()
+	_clear_enemy_visuals()
+	var bar := Node3D.new()
+	bar.name = "TheBentPipe"
+	dungeon_world.add_child(bar)
+	_generated_nodes.append(bar)
+	var timber := Color("4b2d25")
+	var brass := Color("a56f38")
+	var plum := Color("3b2238")
+	_add_box(bar, Vector3(0, -0.25, 0), Vector3(12, 0.5, 12), Color("261d1d"), Color.TRANSPARENT, _assets.dungeon_material(1))
+	_add_box(bar, Vector3(0, 4.5, 0), Vector3(12, 0.35, 12), Color("171016"), Color.TRANSPARENT, _assets.dungeon_material(2))
+	_add_box(bar, Vector3(0, 2.0, -5.8), Vector3(12, 4.5, 0.4), plum, Color.TRANSPARENT, _assets.dungeon_material(0))
+	_add_box(bar, Vector3(-5.8, 2.0, 0), Vector3(0.4, 4.5, 12), timber, Color.TRANSPARENT, _assets.dungeon_material(0))
+	_add_box(bar, Vector3(5.8, 2.0, 0), Vector3(0.4, 4.5, 12), timber, Color.TRANSPARENT, _assets.dungeon_material(0))
+	_add_box(bar, Vector3(0, 1.15, -2.6), Vector3(7.6, 2.3, 1.0), timber, brass)
+	_add_box(bar, Vector3(0, 2.38, -2.6), Vector3(8.0, 0.18, 1.25), brass, Color("c77b42"))
+	for stool_x in [-2.5, -0.85, 0.85, 2.5]:
+		_add_box(bar, Vector3(stool_x, 0.65, -0.55), Vector3(0.55, 1.3, 0.55), Color("3b2924"))
+		_add_box(bar, Vector3(stool_x, 1.35, -0.55), Vector3(0.9, 0.18, 0.9), Color("704537"))
+	for bottle_x in [-2.9, -1.9, 1.8, 2.7]:
+		_add_glow_orb(bar, Vector3(bottle_x, 2.72, -2.55), Color("d46ab3") if bottle_x < 0 else Color("62d8c6"), 0.11)
+	for lamp_x in [-3.4, 3.4]:
+		_add_glow_orb(bar, Vector3(lamp_x, 3.55, -1.9), Color("f0a84f"), 0.30)
+		var light := OmniLight3D.new()
+		light.position = Vector3(lamp_x, 3.3, -1.7)
+		light.light_color = Color("ffbb68")
+		light.light_energy = 5.0
+		light.omni_range = 7.5
+		bar.add_child(light)
+	var sign_label := Label3D.new()
+	sign_label.text = "THE BENT PIPE\nWEAPONS CHECKED  |  STORIES SUSPECT"
+	sign_label.position = Vector3(0, 3.45, -5.5)
+	sign_label.font_size = 34
+	sign_label.pixel_size = 0.006
+	sign_label.outline_size = 8
+	sign_label.modulate = Color("f2cc77")
+	sign_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	bar.add_child(sign_label)
+	camera.position = Vector3(0, CAMERA_HEIGHT, 4.2)
+	camera.rotation = Vector3.ZERO
+	var scrip_visual := Sprite3D.new()
+	scrip_visual.position = Vector3(0.9, 2.65, -2.25)
+	scrip_visual.texture = _assets.enemy_portrait("form_auditor")
+	scrip_visual.pixel_size = 0.0048
+	scrip_visual.texture_filter = BaseMaterial3D.TEXTURE_FILTER_NEAREST
+	scrip_visual.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+	scrip_visual.modulate = Color("ffd5a8")
+	dungeon_world.add_child(scrip_visual)
+	_enemy_visuals.append(scrip_visual)
+	_enemy_visual_by_index[0] = scrip_visual
+	if _picket_visual != null:
+		_picket_visual.hide()
 
 
 func _open_archive() -> void:
@@ -555,12 +857,16 @@ func _refresh_combat_hud() -> void:
 
 func _update_exploration_hud() -> void:
 	var room := _room_data(_current_room)
+	var current_actor := _rivals.actor(_rival_state)
+	var rival_progress := ""
+	if not current_actor.is_empty():
+		rival_progress = "  |  Scrip %s" % String(current_actor.get("posture", "unknown")).replace("_", " ").to_upper()
 	if _picket_visual != null:
 		_picket_visual.show()
 	hud.set_equipment_context(_equipment_state, Content.all_items())
 	hud.set_exploration(
 		String(room.get("title", "Unknown Room")),
-		"Rooms %d / 6  |  Encounters %d / 3  |  Facing %s" % [_visited_rooms.size(), _cleared_rooms.size(), FACING_NAMES[_facing]],
+		"Rooms %d / 6  |  Encounters %d / 3  |  Facing %s%s" % [_visited_rooms.size(), _cleared_rooms.size(), FACING_NAMES[_facing], rival_progress],
 		_map_text(),
 		_room_hint(room),
 		_party,
@@ -836,6 +1142,12 @@ func _play_enemy_hit(effect: Dictionary) -> void:
 	await tween.finished
 
 
+func _play_ally_effects(effects: Array) -> void:
+	for raw_effect in effects:
+		if typeof(raw_effect) == TYPE_DICTIONARY:
+			await _play_enemy_hit(raw_effect)
+
+
 func _present_utterances(utterances: Array, enemy_index: int = -1) -> void:
 	for raw_utterance in utterances:
 		if typeof(raw_utterance) != TYPE_DICTIONARY:
@@ -972,6 +1284,7 @@ func _save_profile(automatic: bool) -> void:
 		"party": _party.duplicate(true),
 		"inventory": _inventory.duplicate(),
 		"equipment": _equipment_state.duplicate(true),
+		"rival": _rival_state.duplicate(true),
 	}
 	var result := Saves.write_atomic(profile)
 	if not result.get("ok", false):
@@ -1017,11 +1330,17 @@ func _load_crawler_profile(report_result: bool) -> bool:
 		_inventory.append(String(item_id))
 	_ensure_demo_archive()
 	_equipment_state = _equipment.normalize_state(data.get("equipment", _equipment_state), Content.all_items())
+	_rival_state = _rivals.normalize_state(data.get("rival", _rival_state))
+	_social_context = ""
+	_active_encounter_id = ""
+	_active_encounter_modifiers.clear()
+	_last_round_result.clear()
 	_clear_enemy_visuals()
 	_build_dungeon()
 	_place_camera(false)
 	hud.hide_hearthfold()
 	hud.hide_reward()
+	hud.hide_social()
 	_mode = MODE_EXPLORATION
 	hud.clear_feed()
 	hud.push_line("SYSTEM", "Crawler profile restored%s." % (" from backup" if result.get("recovered_from_backup", false) else ""))

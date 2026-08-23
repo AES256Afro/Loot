@@ -47,10 +47,12 @@ The wrapper also scans output because Godot can emit a script parse error while 
 | Open or close the Archive | I or Archive button; Escape also closes | Focused Archive button |
 | Navigate Archive items | Up/Down, Tab, Enter, or mouse | Focused Archive controls |
 | Apply or save Loadout A/B | Archive buttons through Tab navigation or mouse | Focused Archive controls |
+| Choose a social response | Tab or mouse, then Enter; visible formulas remain stopped until commitment | Focused social-choice buttons |
+| Visit The Bent Pipe | Interact at the Hearthfold, then choose Visit The Bent Pipe | Focused Hearthfold button |
 | Save | F5 | Not bound in M00 |
 | Load | F9 | Not bound in M00 |
 
-Follow the map through six connected rooms. Combat freezes while commands are chosen for each living party member. Inspect enemy intentions, file one command per member, then resolve the exchange. Taunt forces the selected enemy's next target and Weakens that hit. The Pressure Junction interaction is optional; if primed, Vell's next Power damages every living enemy and equipment may add further consequences. Each cleared encounter grants a deterministic reward. The Archive contains the 32-piece M04A laboratory immediately so both supplied loadouts can be compared without grinding. Victories add permanent copies. The Hearthfold Anchor heals the party and can start another procedural expedition without a timer, gear loss, or reward penalty.
+Follow the map through six connected rooms. Combat freezes while commands are chosen for each living party member. Inspect enemy intentions, file one command per member, then resolve the exchange. Taunt forces the selected enemy's next target and Weakens that hit. The Pressure Junction interaction is optional; if primed, Vell's next Power damages every living enemy and equipment may add further consequences. Each cleared encounter grants a deterministic reward. The Archive contains the 32-piece M04A laboratory immediately so both supplied loadouts can be compared without grinding. Victories add permanent copies. The first defeated Form Auditor visibly survives as Scrip and records the actual finisher. On a later expedition, the Promoted Office pauses for deterministic social choices that show the contributing stat, relationship pressure, difficulty, expected result, and consequence before commitment. A successful partnership changes the opening combat state and unlocks a follow-up in The Bent Pipe after the shared danger is survived. The Hearthfold Anchor heals the party and can start another procedural expedition without a timer, gear loss, or reward penalty.
 
 ## Export templates and builds
 
@@ -81,6 +83,7 @@ scripts/equipment/  Archive equipment state, compatibility, loadouts, and law co
 scripts/game/       Crawler composition and runtime flow
 scripts/loot/       Deterministic reward resolution
 scripts/save/       Transactional local persistence
+scripts/social/     Persistent actors, typed memory, relationships, and social checks
 scripts/ui/         Crawler HUD and command presentation
 scripts/visual/     Procedural sprites and generated-art runtime extraction
 tests/              Headless automated tests
@@ -89,7 +92,7 @@ tools/              Run, check, validation, and export commands
 
 ## Save behavior
 
-The crawler profile is stored in Godot's per-project user-data directory as `profiles/spike_save.json`; the historical filename is retained so old spike inventory can be imported. A write is first flushed and parsed as a temporary file. The prior primary is rotated to `.bak`, then the verified temporary file becomes the primary. Loading falls back to the backup if the primary is invalid.
+The crawler profile is stored in Godot's per-project user-data directory as `profiles/spike_save.json`; the historical filename is retained so old spike inventory can be imported. A write is first flushed and parsed as a temporary file. The prior primary is rotated to `.bak`, then the verified temporary file becomes the primary. Loading falls back to the backup if the primary is invalid. The profile now includes Scrip's actor identity, at most four typed memories, relationship pressures, growth, appearance marks and count, bar history, current posture, promise, social stats, and any committed but unresolved office outcome. Raw dialogue transcripts are not saved.
 
 The automated tests use a separate `test_artifacts/atomic_save_test.json` path and remove only those scoped test files.
 
@@ -101,4 +104,4 @@ Every production definition needs an immutable namespaced ID. The current valida
 
 `.github/workflows/ci.yml` pins Godot and its export templates to 4.7.2. It imports the project, validates content, runs tests, smoke-loads the main scene, exports a Linux development build, and uploads that build as an artifact.
 
-The workflow is proven on GitHub. M04A pull-request run `32659691807` and post-merge `main` run `32659740611` completed validation, all 65 assertions, runtime smoke, Linux export, and artifact upload with Actions v7 on the hosted runner. The earlier 49-assertion crawler run remains historical evidence only.
+The workflow is proven on GitHub. M04A pull-request run `32659691807` and post-merge `main` run `32659740611` completed validation, all 65 assertions, runtime smoke, Linux export, and artifact upload with Actions v7 on the hosted runner. M04B currently passes 81 assertions locally; its pull-request and post-merge run identifiers will be recorded after publication. The earlier 49-assertion crawler run remains historical evidence only.

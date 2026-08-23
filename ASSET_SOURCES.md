@@ -31,6 +31,10 @@ Generation prompts required original shaded lo-fi pixel art, heavy inked silhoue
 
 These files are project-owned generated outputs subject to the applicable OpenAI service terms. If the project approaches commercial distribution, the release gate must still perform similarity review, provenance review, final human art direction, and any legal review considered appropriate. This record is provenance, not a warranty of exclusive rights.
 
+## M04B presentation additions
+
+M04B adds no downloaded or newly generated raster assets. Scrip intentionally reuses the project-owned Form Auditor sprite from `assets/generated/crawler_enemies.png` so the recurring actor is visibly traceable to the defeated enemy. The Bent Pipe set is assembled at runtime from Godot primitive meshes, original project colors, the existing generated dungeon materials, glow orbs, lights, and Godot's default font. Its sign, furniture, bottles, rules text, social interface, and all 90-plus Scrip dialogue lines are original project content.
+
 ## Production rule
 
 Any future external asset must record its creator, source URL or purchase record, license, allowed usage, required attribution, modification status, and the files that use it before being committed. Unverified assets stay outside the repository.
