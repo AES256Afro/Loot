@@ -1,0 +1,201 @@
+{
+  "schema_version": 1,
+  "enemy_opening": {
+    "filing_larva": [
+      "YOUR APPEAL HAS BEEN EATEN.",
+      "Paperwork first. Screaming may be attached as an appendix.",
+      "We retain all records and most fingers.",
+      "Please hold still while we misfile you.",
+      "Your complaint is delicious and lacks supporting documents.",
+      "This encounter is automatically renewed every thirty bites."
+    ],
+    "pipe_goblin": [
+      "I fixed this pipe personally. That is why it hates you.",
+      "Nobody touches the valve except me and the last six explosions.",
+      "My wrench has seniority.",
+      "You look expensive to repair.",
+      "The leak is tactical. The smell is leadership.",
+      "I have one wrench and no remaining doubts."
+    ],
+    "form_auditor": [
+      "Your survival request was submitted in the wrong color blood.",
+      "I find your continued mobility noncompliant.",
+      "This inspection will be thorough, electric, and nonrefundable.",
+      "You may appeal after becoming a cautionary diagram.",
+      "My promotion proves the system works. Please stop laughing.",
+      "Four Claimants, zero appointment confirmations. Appalling."
+    ]
+  },
+  "tiny_hit": {
+    "Dena": [
+      "I have been criticized harder by furniture.",
+      "Was that the attack or a formatting error?",
+      "I barely felt that. File another one if it matters to you.",
+      "That registered as weather.",
+      "The armor would like a real example."
+    ],
+    "Moss": [
+      "A mosquito once committed with more confidence.",
+      "I felt a rumor of violence.",
+      "Adorable. It has discovered verbs.",
+      "That barely disturbed my least important spore.",
+      "Was I meant to become concerned or merely aware?"
+    ],
+    "Vell": [
+      "Good news. That fixed a loose buckle.",
+      "I have invoices with more impact.",
+      "Do it again. Something behind me almost moved.",
+      "Barely a ding. Still adding it to your bill.",
+      "The wrench has voted not to notice."
+    ],
+    "Ilex": [
+      "No treatment required. Possibly for its self-esteem.",
+      "I have taken stronger damage from a poorly folded blanket.",
+      "Medically speaking, that was a suggestion.",
+      "I barely felt that, but I appreciate the diagnostic attempt.",
+      "No bruise. One concern about technique."
+    ]
+  },
+  "heavy_hit": {
+    "Dena": [
+      "That one had weight. Good. Now I know where to stand.",
+      "I felt that through three regulations.",
+      "Strong hit. Bad follow-through. My turn.",
+      "You found the armor. Finding me is the harder portion.",
+      "That moved me half a boot. Celebrate responsibly."
+    ],
+    "Moss": [
+      "Oh. That was offensively competent.",
+      "Excellent hit. I will be growing something in your lungs about it.",
+      "That hurt enough to become personal and educational.",
+      "I withdraw one percent of my contempt.",
+      "Painful. Interesting. Terminal for one of us."
+    ],
+    "Vell": [
+      "That rattled a tool I do not remember owning.",
+      "Very rude. Structurally impressive, but rude.",
+      "I felt that in my emergency emergency pocket.",
+      "That hit had torque. I am stealing the technique.",
+      "Something cracked. Preliminary finding: probably you next."
+    ],
+    "Ilex": [
+      "Significant trauma. I am upgrading you from nuisance to case study.",
+      "That was a real hit. Party, adjust before it repeats.",
+      "I felt that. Dena, I would like the next one declined.",
+      "Strong impact. Its right side opened when it committed.",
+      "Pain noted. Treatment pending. Retaliation encouraged."
+    ]
+  },
+  "electric": {
+    "Dena": [
+      "T-T-TACTICALLY, THIS IS STILL G-G-GUARDING.",
+      "Electric. Ground yourselves and stop touching my shield.",
+      "My teeth have achieved formation.",
+      "That was not impact. That was weather with intent.",
+      "Nobody mention the smoke coming from the helmet."
+    ],
+    "Moss": [
+      "I can taste geometry.",
+      "Excellent. My skeleton has learned percussion.",
+      "Electricity is just lightning trapped in middle management.",
+      "My spores are glowing. This is either useful or expensive.",
+      "I briefly saw every bad decision Vell has not made yet."
+    ],
+    "Vell": [
+      "WHY CAN I HEAR MY WRENCH THINKING?",
+      "Electrical. Insulation plan revised from none to urgent.",
+      "That charged six coins and one deeply surprised button.",
+      "I am fine. My pockets are applauding independently.",
+      "Do not ground me through the good tools."
+    ],
+    "Ilex": [
+      "Electrical trauma. Check grip, breathing, and accidental prophecy.",
+      "That was not a hit. That was an argument with every nerve.",
+      "Nobody touch me until the antlers stop humming.",
+      "Heart rhythm irregular. Anger rhythm excellent.",
+      "I can treat this. I cannot explain why Moss smells like blue."
+    ]
+  },
+  "critical_dealt": [
+    "That was not a weak point. That was a resignation letter.",
+    "Critical hit confirmed. The target has misplaced several future plans.",
+    "Did everyone see that? Good. I refuse to provide a reenactment.",
+    "It made the expensive noise.",
+    "Direct structural disagreement. We won the first draft.",
+    "That hit found an organ the map denied existed.",
+    "Excellent placement. Deeply irresponsible force.",
+    "The dungeon has marked that impact as unnecessarily persuasive.",
+    "Something important left the target without notice.",
+    "Critically filed, aggressively stamped, permanently delivered."
+  ],
+  "taunts": {
+    "Dena": [
+      "Hit me. The others are doing work above your classification.",
+      "You call that a stance? I have seen doors with better threat control.",
+      "Come prove the armor department overfunded me.",
+      "Eyes here, liability with legs.",
+      "Your next attack has been reassigned to someone qualified to receive it."
+    ],
+    "Moss": [
+      "I named a fungus after you. It died from embarrassment.",
+      "Your aura looks like wet arithmetic.",
+      "Come closer. The spores are shy and the infection is not.",
+      "I have curses older than your species and fresher than your breath.",
+      "Your mother was a perfectly respectable organism. You are the anomaly."
+    ],
+    "Vell": [
+      "I have dismantled furniture with a more convincing battle cry.",
+      "Your left knee has resale value. Keep approaching.",
+      "That weapon still has the shop tag on it, champion.",
+      "Fight me. I need to know which pocket gets your dignity.",
+      "I can fix anything except your face, and I enjoy exceptions."
+    ],
+    "Ilex": [
+      "I know seventeen ways you are about to require medical attention.",
+      "Your symptoms include aggression, poor judgment, and imminent bruising.",
+      "Come here. This staff performs corrective wellness.",
+      "I have already prepared your discharge paperwork.",
+      "Your survival prognosis improves dramatically if you surrender now."
+    ]
+  },
+  "enemy_taunt_response": [
+    "I WAS GOING TO HIT YOU ANYWAY.",
+    "Your confidence has been accepted as collateral.",
+    "I do not understand the insult, but I resent its posture.",
+    "Fine. You first. Then the loud fungus.",
+    "That was hurtful and tactically successful.",
+    "I have changed targets for personal reasons.",
+    "You will regret achieving my full attention.",
+    "I will put that sentence back inside you.",
+    "Counterpoint: violence.",
+    "My supervisor permits one revenge break.",
+    "I have no idea what you said. Prepare to be corrected.",
+    "The insult was weak. The targeting effect is unfortunately binding."
+  ],
+  "strategy": [
+    "Its attack opens the left side. Expose it before Dena commits.",
+    "The electric arc follows metal. Guard the declared target or redirect it.",
+    "Weakening matters here. Reduce the hit before spending healing.",
+    "Pressure is primed. Vell can turn the whole room into an argument.",
+    "That one is nearly done. Do not waste a full Power on paperwork.",
+    "Spread the hex while there are two targets left.",
+    "The Auditor commits hard before discharge. Taunt can control the target.",
+    "Guard first, then let the counterclaim answer.",
+    "Expose before Dena strikes. The Edge rewards proper sequencing.",
+    "Save healing if Guard absorbs the declared total. We are not paid by the bandage."
+  ],
+  "conversations": [
+    {"trigger": "electric", "speaker": "Vell", "line": "Moss, why are your spores spelling my name?", "reply_speaker": "Moss", "reply_line": "They are drafting a warning label."},
+    {"trigger": "electric", "speaker": "Dena", "line": "Ilex, helmet still smoking?", "reply_speaker": "Ilex", "reply_line": "Yes. The helmet is also asking about dental coverage."},
+    {"trigger": "heavy_hit", "speaker": "Ilex", "line": "Dena, that impact moved you.", "reply_speaker": "Dena", "reply_line": "Only into a better counterattacking position."},
+    {"trigger": "heavy_hit", "speaker": "Vell", "line": "Was that bone noise ours?", "reply_speaker": "Ilex", "reply_line": "Do not inventory the answer during combat."},
+    {"trigger": "tiny_hit", "speaker": "Moss", "line": "Should we tell it that did nothing?", "reply_speaker": "Dena", "reply_line": "No. Repetition builds confidence and counterattack openings."},
+    {"trigger": "critical", "speaker": "Vell", "line": "Can I have whatever fell off?", "reply_speaker": "Ilex", "reply_line": "You asked before it landed this time. Progress."},
+    {"trigger": "critical", "speaker": "Dena", "line": "Good placement, Moss.", "reply_speaker": "Moss", "reply_line": "I was aiming for its self-esteem. Anatomy intervened."},
+    {"trigger": "taunt", "speaker": "Ilex", "line": "Was the insult medically necessary?", "reply_speaker": "Moss", "reply_line": "No. That is what made it art."},
+    {"trigger": "taunt", "speaker": "Dena", "line": "Vell, stop offering enemies resale estimates.", "reply_speaker": "Vell", "reply_line": "Then they should stop arriving with removable components."},
+    {"trigger": "pressure", "speaker": "Vell", "line": "I can rupture the line safely.", "reply_speaker": "Dena", "reply_line": "Your definition of safely is why I have a shield."},
+    {"trigger": "guard", "speaker": "Moss", "line": "Your shield put my spores in formation.", "reply_speaker": "Dena", "reply_line": "Then make the formation somebody else's problem."},
+    {"trigger": "victory", "speaker": "Ilex", "line": "Everyone still attached?", "reply_speaker": "Vell", "reply_line": "To ourselves or to the original inventory?"}
+  ]
+}

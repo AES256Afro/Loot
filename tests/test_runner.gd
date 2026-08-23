@@ -12,6 +12,8 @@ func _initialize() -> void:
 	_test_deterministic_reward_resolution()
 	_test_dungeon_generation()
 	_test_stopped_time_combat()
+	_test_equipment_changes_the_party()
+	_test_reactive_dialogue()
 	_test_pixel_sprite_factory()
 	_test_event_stream()
 	_test_atomic_save_and_backup_recovery()
@@ -34,7 +36,7 @@ func _test_content_registry() -> void:
 	_assert(registry.call("load_all"), "Authored item and enemy documents validate.")
 	var items: Dictionary = registry.get("item_definitions")
 	var enemies: Dictionary = registry.get("enemy_definitions")
-	_assert(items.size() == 3, "All three spike items enter the registry.")
+	_assert(items.size() == 35, "All 32 crawler equipment items and three foundation rewards enter the registry.")
 	_assert(enemies.size() == 3, "All three crawler enemies enter the registry.")
 	_assert(items.has("item.spike.pearl_of_the_unbothered_drain"), "Legendary definition is addressable by immutable ID.")
 	_assert(enemies.has("enemy.gutterbloom.form_auditor"), "Promoted enemy definition is addressable by immutable ID.")
@@ -160,6 +162,72 @@ func _test_stopped_time_combat() -> void:
 		lethal_enemies.append(resolver.create_enemy(lethal_definition, index))
 	var defeat := resolver.resolve_round(fragile_party, lethal_enemies, guard_commands, 1, false)
 	_assert(defeat.get("defeat", false), "Full party defeat is reported without deleting progression state.")
+	var electric_definition := enemy_definition.duplicate(true)
+	electric_definition["damage_type"] = "electric"
+	var electric_enemy := resolver.create_enemy(electric_definition, 9)
+	var taunt_commands := guard_commands.duplicate(true)
+	taunt_commands[3] = {"action": CombatResolver.ACTION_TAUNT, "target": 0}
+	var taunted := resolver.resolve_round(party, [electric_enemy], taunt_commands, 1, false)
+	var taunted_effects: Array = taunted.get("effects", [])
+	var found_electric_ilex_hit := false
+	for raw_effect in taunted_effects:
+		var effect: Dictionary = raw_effect
+		if String(effect.get("target_kind", "")) == "party" and int(effect.get("target_index", -1)) == 3 and String(effect.get("damage_type", "")) == "electric":
+			found_electric_ilex_hit = true
+	_assert(found_electric_ilex_hit, "Taunt changes the declared target and preserves the enemy's electrical damage type for presentation.")
+
+
+func _test_equipment_changes_the_party() -> void:
+	var registry_script := load("res://scripts/content/content_registry.gd")
+	var registry: Node = registry_script.new()
+	registry.call("load_all")
+	var definitions: Dictionary = registry.get("item_definitions")
+	var equipment := EquipmentService.new()
+	var inventory := equipment.starter_inventory(definitions)
+	var state := equipment.create_default_state(definitions)
+	_assert(inventory.size() == 32, "The proof Archive begins with all 32 crawler equipment definitions and has no capacity gate.")
+	_assert((state.get("members", []) as Array).size() == 4 and (state.get("relics", []) as Array).size() == 2, "Equipment state provides four members and two Shared Relic slots.")
+	_assert(equipment.equipped_item_ids(state).size() == 18, "Each member starts with four equipped items and the party starts with two relics.")
+	var laws_a := equipment.compile_laws(state, definitions)
+	_assert((laws_a.get("entries", []) as Array).size() == 18, "Equipped items compile into 18 deterministic law entries.")
+	var incompatible := equipment.equip_member(state, definitions, inventory, "item.gutterbloom.denas_union_edge", 1)
+	_assert(not incompatible.get("ok", true), "A role-locked Dena weapon cannot be equipped by Moss.")
+	var favorited := equipment.toggle_favorite(state, definitions, "item.gutterbloom.denas_union_edge")
+	_assert((favorited.get("favorites", []) as Array).has("item.gutterbloom.denas_union_edge"), "Archive favorites persist in equipment state without consuming the item.")
+	var saved := equipment.save_loadout(favorited, definitions, "A")
+	_assert(saved.get("ok", false), "Loadout A snapshots the current equipment state.")
+	var applied_b := equipment.apply_loadout(saved.get("state", {}), definitions, inventory, "B")
+	_assert(applied_b.get("ok", false) and String((applied_b.get("state", {}) as Dictionary).get("active_loadout", "")) == "B", "Supplied Loadout B applies from the persistent Archive.")
+	var resolver := CombatResolver.new()
+	var enemy_definition := {"id": "enemy.test.auditor", "display_name": "Training Auditor", "max_hp": 60, "damage": 6, "damage_type": "electric", "sprite_key": "form_auditor"}
+	var enemies := [resolver.create_enemy(enemy_definition, 0), resolver.create_enemy(enemy_definition, 1), resolver.create_enemy(enemy_definition, 2)]
+	var commands := [
+		{"action": CombatResolver.ACTION_GUARD, "target": 0},
+		{"action": CombatResolver.ACTION_POWER, "target": 0},
+		{"action": CombatResolver.ACTION_POWER, "target": 1},
+		{"action": CombatResolver.ACTION_UTILITY, "target": 2},
+	]
+	var result_a := resolver.resolve_round(resolver.create_default_party(), enemies, commands, 1, true, laws_a)
+	var laws_b := equipment.compile_laws(applied_b.get("state", {}), definitions)
+	var result_b := resolver.resolve_round(resolver.create_default_party(), enemies, commands, 1, true, laws_b)
+	_assert(result_a != result_b, "Municipal Phalanx and Burst Pipe Choir produce different state and traces from the same encounter plan.")
+	_assert(String("\n".join(result_a.get("log", []))).contains("activates:"), "Combat traces name activated equipment instead of hiding its contribution.")
+	registry.free()
+
+
+func _test_reactive_dialogue() -> void:
+	var dialogue := ReactiveDialogue.new()
+	_assert(dialogue.validate().is_empty(), "Reactive combat dialogue validates its required categories and authored inventory.")
+	_assert(dialogue.line_count() >= 120, "Reactive combat dialogue contains at least 120 authored lines and exchanges.")
+	dialogue.reset_encounter(81_231, "office")
+	var first := dialogue.enemy_opening("form_auditor", "Form Auditor")
+	dialogue.reset_encounter(81_231, "office")
+	var repeated := dialogue.enemy_opening("form_auditor", "Form Auditor")
+	_assert(first == repeated and not String(first.get("line", "")).is_empty(), "The same encounter context selects the same non-empty monster opening.")
+	var electric_reactions := dialogue.reaction_to_effect({"target_kind": "party", "target_index": 2, "damage_type": "electric", "amount": 6, "magnitude": 0.32}, CombatResolver.new().create_default_party(), [])
+	_assert(not electric_reactions.is_empty() and String(electric_reactions[0].get("speaker", "")) == "Vell", "Electrical damage selects a victim-specific reaction instead of a generic hit line.")
+	var taunts := dialogue.taunt(1, "Form Auditor")
+	_assert(taunts.size() >= 2 and String(taunts[1].get("kind", "")) == "enemy", "Taunt produces party dialogue and an enemy response while changing combat state separately.")
 
 
 func _test_pixel_sprite_factory() -> void:
