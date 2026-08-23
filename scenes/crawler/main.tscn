@@ -1,7 +1,7 @@
 [gd_scene load_steps=4 format=3]
 
 [ext_resource type="Script" path="res://scripts/game/crawler_main.gd" id="1_main"]
-[ext_resource type="Script" path="res://scripts/ui/crawler_hud.gd" id="2_hud"]
+[ext_resource type="Script" path="res://scripts/ui/crawler_hud_v2.gd" id="2_hud"]
 
 [sub_resource type="Environment" id="Environment_crawler"]
 background_mode = 1

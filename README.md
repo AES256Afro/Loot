@@ -15,7 +15,7 @@ The project can use high-level genre inspiration, but it will not copy protected
 
 ## Current status
 
-The approved first-person shaded pixel crawler is now the runnable main scene. The replacement M00 build contains a deterministic six-room Gutterbloom expedition, cardinal first-person exploration, a four-person party, three enemy types, stopped-time command planning, visible enemy intentions, an optional environmental setup, deterministic rewards, Herald and Picket commentary, a Hearthfold endpoint, repeatable seeds, and atomic local saving. The implementation is covered by 49 automated assertions; user feel review remains a human gate. The pivot contract is defined in [PIVOT_FIRST_PERSON_CRAWLER.md](PIVOT_FIRST_PERSON_CRAWLER.md).
+The approved first-person shaded pixel crawler is the runnable main scene. M04A expands the six-room Gutterbloom foundation with 32 original equipment definitions, four slots for each of four party members, two Shared Relic slots, an uncapped Archive, favorites, comparison, two persistent loadouts, 18 simultaneously equipped law hooks, typed magnitude-aware hit reactions, electrical paper-doll animation, Taunt-driven targeting and dialogue, monster speech above the battlefield, and more than 120 authored conditional combat lines and exchanges. Generated project-owned portraits, enemies, equipment icons, and dungeon materials move the live composition toward the approved promo. The implementation is covered by 65 automated assertions; player feel remains a human gate. The focused contract is defined in [M04A_LOOT_CHANGES_PARTY.md](M04A_LOOT_CHANGES_PARTY.md).
 
 ## Product assumptions
 
@@ -34,11 +34,14 @@ The current M00 playable is a compact expedition in **The Gutterbloom**, a funga
 
 - a seed-reproducible six-room critical path from Underworks Intake to a Hearthfold Anchor;
 - step movement, left and right turning, backward movement, keyboard controls, and controller exploration controls;
-- Dena the Bulwark, Moss the Hexer, Vell the Scavenger, and Ilex the Warden, each with Strike, Power, Guard, and Expose choices;
+- Dena the Bulwark, Moss the Hexer, Vell the Scavenger, and Ilex the Warden, each with Strike, Power, Guard, Expose, and Taunt choices;
 - fully stopped planning with visible enemy targets and intentions, followed by a short deterministic resolution;
 - Filing Larvae, Pipe Goblins, and a promoted Form Auditor encounter;
 - an optional Pressure Junction setup that strengthens Vell's later Power without penalizing players who ignore it;
 - earned deterministic rewards that enter a persistent, effectively unbounded prototype Archive;
+- 32 immediately testable equipment definitions, role compatibility, favorites, comparisons, four member slots, two Shared Relics, and Loadout A/B build swapping;
+- named equipment activations that alter Guard distribution, status spread, environmental payoff, targeting, counterattacks, healing, and party sequencing;
+- damage-type and magnitude-aware hit reactions plus conditional monster, victim, critical-hit, tactical, insult, and party-conversation dialogue;
 - **Picket** and the **Herald Engine** reacting to rooms, maintenance choices, enemies, victory, defeat, and loot;
 - no combat timer, no gear loss, no reward reduction for repetition, full-party recovery on defeat, and full healing at the Hearthfold;
 - autosave, manual save/load, backup recovery, and new procedural expeditions that retain every reward.
@@ -70,6 +73,8 @@ The broader 20-to-30-minute Gutterbloom vertical slice remains the next producti
 - [DEVELOPMENT.md](DEVELOPMENT.md): exact local setup, controls, tests, exports, saves, and project layout.
 - [ASSET_SOURCES.md](ASSET_SOURCES.md): current asset provenance and the production asset rule.
 - [PIVOT_FIRST_PERSON_CRAWLER.md](PIVOT_FIRST_PERSON_CRAWLER.md): approved camera, combat, visual direction, reusable systems, and replacement M00 slice.
+- [M04A_LOOT_CHANGES_PARTY.md](M04A_LOOT_CHANGES_PARTY.md): the playable equipment-law, Archive, loadout, visual, hit-reaction, and dialogue proof.
+- [GRUDGE_WEB.md](GRUDGE_WEB.md): recurring rivals, remembered defeats, cohorts, patrons, enemy-to-friend transitions, and dialogue-driven encounter rules.
 
 ## Build philosophy
 

@@ -24,12 +24,15 @@ const FACING_NAMES := ["NORTH", "EAST", "SOUTH", "WEST"]
 
 @onready var dungeon_world: Node3D = $ViewportContainer/WorldViewport/DungeonWorld
 @onready var camera: Camera3D = $ViewportContainer/WorldViewport/DungeonWorld/Camera3D
-@onready var hud: CrawlerHUD = $HUD
+@onready var hud: CrawlerHUDV2 = $HUD
 
 var _generator := DungeonGenerator.new()
 var _combat := CombatResolver.new()
 var _reward_resolver := DeterministicRewardResolver.new()
 var _sprite_factory := PixelSpriteFactory.new()
+var _equipment := EquipmentService.new()
+var _assets := GeneratedAssetLibrary.new()
+var _dialogue := ReactiveDialogue.new()
 
 var _layout: Dictionary = {}
 var _run_seed := BASE_RUN_SEED
@@ -50,8 +53,11 @@ var _pressure_primed := false
 var _inventory: Array[String] = []
 var _reward_roll_index := 0
 var _defeat_count := 0
+var _equipment_state: Dictionary = {}
 var _generated_nodes: Array[Node] = []
 var _enemy_visuals: Array[Sprite3D] = []
+var _enemy_visual_by_index: Dictionary = {}
+var _picket_visual: Sprite3D
 
 
 func _ready() -> void:
@@ -61,6 +67,10 @@ func _ready() -> void:
 			push_error(content_error)
 		hud.push_line("SYSTEM", "Content failed validation. Run tools/check.sh.")
 		return
+	_equipment_state = _equipment.create_default_state(Content.all_items())
+	for dialogue_error in _dialogue.validate():
+		push_error(dialogue_error)
+		hud.push_line("SYSTEM", dialogue_error)
 	_attach_picket_to_camera()
 	if not _load_crawler_profile(false):
 		_start_new_expedition(false)
@@ -74,6 +84,13 @@ func _unhandled_input(event: InputEvent) -> void:
 			return
 		if event.physical_keycode == KEY_F9:
 			_load_crawler_profile(true)
+			get_viewport().set_input_as_handled()
+			return
+		if event.physical_keycode in [KEY_I, KEY_ESCAPE]:
+			if hud.archive_is_open():
+				_close_archive()
+			elif event.physical_keycode == KEY_I:
+				_open_archive()
 			get_viewport().set_input_as_handled()
 			return
 		if hud.modal_open():
@@ -106,6 +123,12 @@ func _connect_hud() -> void:
 	hud.reward_closed.connect(_close_reward)
 	hud.new_expedition_requested.connect(_on_new_expedition)
 	hud.return_to_dungeon_requested.connect(_return_from_hearthfold)
+	hud.archive_requested.connect(_open_archive)
+	hud.archive_closed.connect(_close_archive)
+	hud.archive_equip_requested.connect(_on_archive_equip_requested)
+	hud.archive_favorite_requested.connect(_on_archive_favorite_requested)
+	hud.save_loadout_requested.connect(_on_save_loadout_requested)
+	hud.apply_loadout_requested.connect(_on_apply_loadout_requested)
 
 
 func _handle_exploration_key(keycode: Key) -> void:
@@ -132,6 +155,8 @@ func _handle_combat_key(keycode: Key) -> void:
 			_on_action_selected(CombatResolver.ACTION_GUARD)
 		KEY_4:
 			_on_action_selected(CombatResolver.ACTION_UTILITY)
+		KEY_5:
+			_on_action_selected(CombatResolver.ACTION_TAUNT)
 		KEY_LEFT, KEY_A:
 			_cycle_target(-1)
 		KEY_RIGHT, KEY_D:
@@ -152,6 +177,7 @@ func _start_new_expedition(increment_index: bool = true) -> void:
 	_facing = _initial_facing()
 	_mode = MODE_EXPLORATION
 	_party = _combat.create_default_party()
+	_ensure_demo_archive()
 	_enemies.clear()
 	_commands.clear()
 	_cleared_rooms.clear()
@@ -253,6 +279,9 @@ func _start_combat(encounter_id: String) -> void:
 	_active_member = _next_unplanned_member()
 	_selected_target = _first_living_enemy()
 	_spawn_enemy_visuals()
+	if _picket_visual != null:
+		_picket_visual.hide()
+	_dialogue.reset_encounter(_run_seed + _round_index, encounter_id)
 	match encounter_id:
 		"nursery":
 			hud.push_line("HERALD", "Filing Larvae approach. They have confused record retention with digestion.")
@@ -261,6 +290,13 @@ func _start_combat(encounter_id: String) -> void:
 		"office":
 			hud.push_line("HERALD", "Promoted encounter: the Form Auditor has achieved management without surviving competence.")
 	GameEvents.publish(&"combat.started", {"encounter_id": encounter_id, "room_id": _current_room})
+	var opening_enemy_index := _first_living_enemy()
+	if opening_enemy_index >= 0 and opening_enemy_index < _enemies.size():
+		var opening_enemy: Dictionary = _enemies[opening_enemy_index]
+		_present_utterance(_dialogue.enemy_opening(String(opening_enemy.get("sprite_key", "filing_larva")), String(opening_enemy.get("name", "ENEMY"))), opening_enemy_index)
+	var advice := _dialogue.strategy_line()
+	if not String(advice.get("line", "")).is_empty():
+		hud.push_line(String(advice.get("speaker", "PARTY")).to_upper(), String(advice.get("line", "")))
 	_refresh_combat_hud()
 
 
@@ -327,14 +363,28 @@ func _resolve_plan() -> void:
 		return
 	_mode = MODE_RESOLVING
 	hud.set_resolving()
-	var result := _combat.resolve_round(_party, _enemies, _commands, _round_index, _pressure_primed)
+	for member_index in range(_commands.size()):
+		var command: Dictionary = _commands[member_index]
+		if String(command.get("action", "")) == CombatResolver.ACTION_TAUNT:
+			var taunt_target := int(command.get("target", 0))
+			if taunt_target >= 0 and taunt_target < _enemies.size():
+				await _present_utterances(_dialogue.taunt(member_index, String(_enemies[taunt_target].get("name", "ENEMY"))), taunt_target)
+	var equipment_laws := _equipment.compile_laws(_equipment_state, Content.all_items())
+	var result := _combat.resolve_round(_party, _enemies, _commands, _round_index, _pressure_primed, equipment_laws)
 	_party = result["party"]
 	_enemies = result["enemies"]
 	if result.get("environment_consumed", false):
 		_pressure_primed = false
 	for log_line in result.get("log", []):
 		hud.push_line("RESOLVE", String(log_line))
-		await get_tree().create_timer(0.18).timeout
+		await get_tree().create_timer(0.08).timeout
+	for raw_effect in result.get("effects", []):
+		var effect: Dictionary = raw_effect
+		if String(effect.get("target_kind", "")) == "party":
+			await hud.play_party_hit(effect)
+		else:
+			await _play_enemy_hit(effect)
+		await _present_utterances(_dialogue.reaction_to_effect(effect, _party, _enemies), int(effect.get("target_index", -1)) if String(effect.get("target_kind", "")) == "enemy" else -1)
 	_spawn_enemy_visuals()
 	GameEvents.publish(&"combat.round_resolved", {
 		"round": _round_index,
@@ -423,6 +473,65 @@ func _return_from_hearthfold() -> void:
 	_update_exploration_hud()
 
 
+func _open_archive() -> void:
+	if _mode in [MODE_MOVING, MODE_COMBAT, MODE_RESOLVING]:
+		hud.push_line("PICKET", "The Archive does not permit wardrobe changes during an active disagreement. Finish the filed combat plan first.")
+		return
+	hud.set_equipment_context(_equipment_state, Content.all_items())
+	hud.show_archive(Content.all_items(), _inventory, _equipment_state)
+
+
+func _close_archive() -> void:
+	if not hud.archive_is_open():
+		return
+	hud.hide_archive()
+	_save_profile(true)
+
+
+func _on_archive_equip_requested(item_id: String, destination_kind: String, destination_index: int) -> void:
+	var result: Dictionary
+	if destination_kind == "relic":
+		result = _equipment.equip_relic(_equipment_state, Content.all_items(), _inventory, item_id, destination_index)
+	else:
+		result = _equipment.equip_member(_equipment_state, Content.all_items(), _inventory, item_id, destination_index)
+	_equipment_state = result.get("state", _equipment_state)
+	hud.push_line("LOOT" if result.get("ok", false) else "SYSTEM", String(result.get("message", "Equipment request failed.")))
+	hud.refresh_archive(Content.all_items(), _inventory, _equipment_state)
+	_save_profile(true)
+
+
+func _on_archive_favorite_requested(item_id: String) -> void:
+	_equipment_state = _equipment.toggle_favorite(_equipment_state, Content.all_items(), item_id)
+	var item := Content.get_item(item_id)
+	var now_favorite := (_equipment_state.get("favorites", []) as Array).has(item_id)
+	hud.push_line("LOOT", "%s %s favorites. This changes no drop odds and consumes nothing." % [item.get("display_name", item_id), "added to" if now_favorite else "removed from"])
+	hud.refresh_archive(Content.all_items(), _inventory, _equipment_state)
+	_save_profile(true)
+
+
+func _on_save_loadout_requested(loadout_name: String) -> void:
+	var result := _equipment.save_loadout(_equipment_state, Content.all_items(), loadout_name)
+	_equipment_state = result.get("state", _equipment_state)
+	hud.push_line("LOOT", String(result.get("message", "Loadout save failed.")))
+	hud.refresh_archive(Content.all_items(), _inventory, _equipment_state)
+	_save_profile(true)
+
+
+func _on_apply_loadout_requested(loadout_name: String) -> void:
+	var result := _equipment.apply_loadout(_equipment_state, Content.all_items(), _inventory, loadout_name)
+	_equipment_state = result.get("state", _equipment_state)
+	hud.push_line("LOOT" if result.get("ok", false) else "SYSTEM", String(result.get("message", "Loadout apply failed.")))
+	hud.refresh_archive(Content.all_items(), _inventory, _equipment_state)
+	_save_profile(true)
+
+
+func _ensure_demo_archive() -> void:
+	for item_id in _equipment.starter_inventory(Content.all_items()):
+		if not _inventory.has(item_id):
+			_inventory.append(item_id)
+	_equipment_state = _equipment.normalize_state(_equipment_state, Content.all_items())
+
+
 func _on_new_expedition() -> void:
 	if _mode != MODE_HEARTHFOLD:
 		return
@@ -431,6 +540,7 @@ func _on_new_expedition() -> void:
 
 func _refresh_combat_hud() -> void:
 	var intents := _combat.enemy_intents(_enemies, _party, _round_index)
+	hud.set_equipment_context(_equipment_state, Content.all_items())
 	hud.set_combat(
 		_party,
 		_enemies,
@@ -445,6 +555,9 @@ func _refresh_combat_hud() -> void:
 
 func _update_exploration_hud() -> void:
 	var room := _room_data(_current_room)
+	if _picket_visual != null:
+		_picket_visual.show()
+	hud.set_equipment_context(_equipment_state, Content.all_items())
 	hud.set_exploration(
 		String(room.get("title", "Unknown Room")),
 		"Rooms %d / 6  |  Encounters %d / 3  |  Facing %s" % [_visited_rooms.size(), _cleared_rooms.size(), FACING_NAMES[_facing]],
@@ -482,7 +595,7 @@ func _map_text() -> String:
 		max_x = maxi(max_x, coord.x)
 		min_y = mini(min_y, coord.y)
 		max_y = maxi(max_y, coord.y)
-	var lines: PackedStringArray = ["DUNGEON MAP"]
+	var lines: PackedStringArray = ["MAP  @ YOU  x CLEAR  H HOME"]
 	for y in range(min_y, max_y + 1):
 		var row := ""
 		for x in range(min_x, max_x + 1):
@@ -500,9 +613,6 @@ func _map_text() -> String:
 			else:
 				row += " o "
 		lines.append(row)
-	lines.append("")
-	lines.append("@ YOU   ? UNKNOWN")
-	lines.append("x CLEARED   H HEARTHFOLD")
 	return "\n".join(lines)
 
 
@@ -523,10 +633,10 @@ func _build_dungeon() -> void:
 
 func _build_room(parent: Node3D, room: Dictionary) -> void:
 	var palette := _room_palette(String(room["type"]))
-	_add_box(parent, Vector3(0, -0.25, 0), Vector3(ROOM_SIZE, 0.5, ROOM_SIZE), palette["floor"])
-	_add_box(parent, Vector3(0, 4.25, 0), Vector3(ROOM_SIZE, 0.35, ROOM_SIZE), palette["ceiling"])
+	_add_box(parent, Vector3(0, -0.25, 0), Vector3(ROOM_SIZE, 0.5, ROOM_SIZE), palette["floor"], Color.TRANSPARENT, _assets.dungeon_material(1))
+	_add_box(parent, Vector3(0, 4.25, 0), Vector3(ROOM_SIZE, 0.35, ROOM_SIZE), palette["ceiling"], Color.TRANSPARENT, _assets.dungeon_material(2))
 	for direction in FACING_DIRECTIONS:
-		_build_wall(parent, int(room["id"]), direction, palette["wall"])
+		_build_wall(parent, int(room["id"]), direction, palette["wall"], _assets.dungeon_material(0))
 		if direction in [Vector2i(1, 0), Vector2i(0, 1)]:
 			var neighbor := _generator.neighbor_in_direction(_layout, int(room["id"]), direction)
 			if neighbor >= 0:
@@ -540,32 +650,32 @@ func _build_room(parent: Node3D, room: Dictionary) -> void:
 	parent.add_child(light)
 
 
-func _build_wall(parent: Node3D, room_index: int, direction: Vector2i, color: Color) -> void:
+func _build_wall(parent: Node3D, room_index: int, direction: Vector2i, color: Color, texture: Texture2D) -> void:
 	var connected := _generator.neighbor_in_direction(_layout, room_index, direction) >= 0
 	var horizontal := direction.x == 0
 	var center := Vector3(direction.x * ROOM_SIZE * 0.5, 2.0, direction.y * ROOM_SIZE * 0.5)
 	if not connected:
-		_add_box(parent, center, Vector3(ROOM_SIZE if horizontal else 0.4, 4.5, 0.4 if horizontal else ROOM_SIZE), color)
+		_add_box(parent, center, Vector3(ROOM_SIZE if horizontal else 0.4, 4.5, 0.4 if horizontal else ROOM_SIZE), color, Color.TRANSPARENT, texture)
 		return
 	if horizontal:
-		_add_box(parent, center + Vector3(-3.25, 0, 0), Vector3(3.5, 4.5, 0.4), color)
-		_add_box(parent, center + Vector3(3.25, 0, 0), Vector3(3.5, 4.5, 0.4), color)
+		_add_box(parent, center + Vector3(-3.25, 0, 0), Vector3(3.5, 4.5, 0.4), color, Color.TRANSPARENT, texture)
+		_add_box(parent, center + Vector3(3.25, 0, 0), Vector3(3.5, 4.5, 0.4), color, Color.TRANSPARENT, texture)
 	else:
-		_add_box(parent, center + Vector3(0, 0, -3.25), Vector3(0.4, 4.5, 3.5), color)
-		_add_box(parent, center + Vector3(0, 0, 3.25), Vector3(0.4, 4.5, 3.5), color)
+		_add_box(parent, center + Vector3(0, 0, -3.25), Vector3(0.4, 4.5, 3.5), color, Color.TRANSPARENT, texture)
+		_add_box(parent, center + Vector3(0, 0, 3.25), Vector3(0.4, 4.5, 3.5), color, Color.TRANSPARENT, texture)
 
 
 func _build_corridor(parent: Node3D, direction: Vector2i, palette: Dictionary) -> void:
 	var center := Vector3(direction.x * 7.0, 0, direction.y * 7.0)
 	var along_x := direction.x != 0
-	_add_box(parent, center + Vector3(0, -0.25, 0), Vector3(4.0 if along_x else 3.0, 0.5, 3.0 if along_x else 4.0), palette["floor"])
-	_add_box(parent, center + Vector3(0, 4.25, 0), Vector3(4.0 if along_x else 3.0, 0.35, 3.0 if along_x else 4.0), palette["ceiling"])
+	_add_box(parent, center + Vector3(0, -0.25, 0), Vector3(4.0 if along_x else 3.0, 0.5, 3.0 if along_x else 4.0), palette["floor"], Color.TRANSPARENT, _assets.dungeon_material(1))
+	_add_box(parent, center + Vector3(0, 4.25, 0), Vector3(4.0 if along_x else 3.0, 0.35, 3.0 if along_x else 4.0), palette["ceiling"], Color.TRANSPARENT, _assets.dungeon_material(2))
 	if along_x:
-		_add_box(parent, center + Vector3(0, 2, -1.5), Vector3(4.0, 4.5, 0.3), palette["wall"])
-		_add_box(parent, center + Vector3(0, 2, 1.5), Vector3(4.0, 4.5, 0.3), palette["wall"])
+		_add_box(parent, center + Vector3(0, 2, -1.5), Vector3(4.0, 4.5, 0.3), palette["wall"], Color.TRANSPARENT, _assets.dungeon_material(0))
+		_add_box(parent, center + Vector3(0, 2, 1.5), Vector3(4.0, 4.5, 0.3), palette["wall"], Color.TRANSPARENT, _assets.dungeon_material(0))
 	else:
-		_add_box(parent, center + Vector3(-1.5, 2, 0), Vector3(0.3, 4.5, 4.0), palette["wall"])
-		_add_box(parent, center + Vector3(1.5, 2, 0), Vector3(0.3, 4.5, 4.0), palette["wall"])
+		_add_box(parent, center + Vector3(-1.5, 2, 0), Vector3(0.3, 4.5, 4.0), palette["wall"], Color.TRANSPARENT, _assets.dungeon_material(0))
+		_add_box(parent, center + Vector3(1.5, 2, 0), Vector3(0.3, 4.5, 4.0), palette["wall"], Color.TRANSPARENT, _assets.dungeon_material(0))
 
 
 func _add_room_decor(parent: Node3D, room_type: String, palette: Dictionary) -> void:
@@ -594,7 +704,8 @@ func _add_box(
 	position_value: Vector3,
 	size: Vector3,
 	color: Color,
-	emission: Color = Color.TRANSPARENT
+	emission: Color = Color.TRANSPARENT,
+	texture: Texture2D = null
 ) -> void:
 	var instance := MeshInstance3D.new()
 	instance.position = position_value
@@ -603,6 +714,9 @@ func _add_box(
 	instance.mesh = mesh
 	var material := StandardMaterial3D.new()
 	material.albedo_color = color
+	if texture != null:
+		material.albedo_texture = texture
+		material.texture_filter = BaseMaterial3D.TEXTURE_FILTER_NEAREST
 	material.roughness = 0.82
 	if emission.a > 0.0:
 		material.emission_enabled = true
@@ -657,19 +771,21 @@ func _spawn_enemy_visuals() -> void:
 		if int(enemy.get("hp", 0)) > 0:
 			living_count += 1
 	var visible_index := 0
-	for enemy in _enemies:
+	for enemy_index in range(_enemies.size()):
+		var enemy: Dictionary = _enemies[enemy_index]
 		if int(enemy.get("hp", 0)) <= 0:
 			continue
 		var offset := (float(visible_index) - float(living_count - 1) * 0.5) * 1.9
 		var sprite := Sprite3D.new()
 		sprite.position = room_center + forward * 3.1 + right * offset + Vector3(0, 1.55, 0)
-		sprite.texture = _sprite_factory.enemy_texture(String(enemy.get("sprite_key", "filing_larva")))
-		sprite.pixel_size = 0.058
+		sprite.texture = _assets.enemy_portrait(String(enemy.get("sprite_key", "filing_larva")))
+		sprite.pixel_size = 0.0045
 		sprite.texture_filter = BaseMaterial3D.TEXTURE_FILTER_NEAREST
 		sprite.billboard = BaseMaterial3D.BILLBOARD_ENABLED
 		sprite.modulate = Color.WHITE
 		dungeon_world.add_child(sprite)
 		_enemy_visuals.append(sprite)
+		_enemy_visual_by_index[enemy_index] = sprite
 		visible_index += 1
 
 
@@ -678,18 +794,100 @@ func _clear_enemy_visuals() -> void:
 		if is_instance_valid(visual):
 			visual.queue_free()
 	_enemy_visuals.clear()
+	_enemy_visual_by_index.clear()
+
+
+func _play_enemy_hit(effect: Dictionary) -> void:
+	var enemy_index := int(effect.get("target_index", -1))
+	var sprite := _enemy_visual_by_index.get(enemy_index) as Sprite3D
+	if sprite == null or not is_instance_valid(sprite):
+		return
+	var amount := int(effect.get("amount", 0))
+	if amount <= 0:
+		return
+	var magnitude := clampf(float(effect.get("magnitude", 0.0)), 0.0, 1.0)
+	var damage_type := String(effect.get("damage_type", "impact"))
+	var base_position := sprite.position
+	var base_scale := sprite.scale
+	var amplitude := 0.025 + magnitude * 0.28
+	var duration := 0.045 + magnitude * 0.08
+	var tween := create_tween()
+	match damage_type:
+		"electric":
+			for flash in range(2 + ceili(magnitude * 4.0)):
+				var direction := -1.0 if flash % 2 == 0 else 1.0
+				tween.tween_property(sprite, "position", base_position + Vector3(direction * amplitude, amplitude * 0.4, 0), duration * 0.55)
+				tween.parallel().tween_property(sprite, "modulate", Color("7eefff") if flash % 2 == 0 else Color("fff39b"), duration * 0.4)
+		"decay", "acid":
+			tween.tween_property(sprite, "modulate", Color("c267e4") if damage_type == "decay" else Color("7ce35a"), duration * 1.5)
+			tween.parallel().tween_property(sprite, "scale", base_scale * (1.0 - magnitude * 0.12), duration * 1.5)
+		"slash":
+			tween.tween_property(sprite, "position", base_position + Vector3(-amplitude, amplitude * 0.35, 0), duration)
+			tween.parallel().tween_property(sprite, "modulate", Color("ff8585"), duration)
+		_:
+			tween.tween_property(sprite, "position", base_position + Vector3(amplitude, 0, 0), duration)
+			tween.parallel().tween_property(sprite, "scale", base_scale * (1.0 + magnitude * 0.18), duration)
+	if bool(effect.get("critical", false)):
+		tween.parallel().tween_property(sprite, "scale", base_scale * 1.28, duration)
+		tween.parallel().tween_property(sprite, "modulate", Color("fff1a2"), duration)
+	tween.tween_property(sprite, "position", base_position, duration)
+	tween.parallel().tween_property(sprite, "scale", base_scale, duration * 1.4)
+	tween.parallel().tween_property(sprite, "modulate", Color.WHITE, duration * 1.4)
+	await tween.finished
+
+
+func _present_utterances(utterances: Array, enemy_index: int = -1) -> void:
+	for raw_utterance in utterances:
+		if typeof(raw_utterance) != TYPE_DICTIONARY:
+			continue
+		_present_utterance(raw_utterance, enemy_index)
+		await get_tree().create_timer(0.34).timeout
+
+
+func _present_utterance(utterance: Dictionary, enemy_index: int = -1) -> void:
+	var line := String(utterance.get("line", ""))
+	if line.is_empty():
+		return
+	var speaker := String(utterance.get("speaker", "VOICE"))
+	hud.push_line(speaker.to_upper(), line)
+	if String(utterance.get("kind", "party")) == "enemy" and enemy_index >= 0:
+		_show_enemy_speech(enemy_index, line)
+
+
+func _show_enemy_speech(enemy_index: int, line: String) -> void:
+	var sprite := _enemy_visual_by_index.get(enemy_index) as Sprite3D
+	if sprite == null or not is_instance_valid(sprite):
+		return
+	var speech := Label3D.new()
+	speech.text = line
+	speech.position = sprite.position + Vector3(0, 2.25, 0)
+	speech.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+	speech.no_depth_test = true
+	speech.font_size = 30
+	speech.pixel_size = 0.0052
+	speech.outline_size = 8
+	speech.modulate = Color("fff0b5")
+	speech.width = 680.0
+	speech.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	speech.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	dungeon_world.add_child(speech)
+	var tween := create_tween()
+	tween.tween_interval(1.7)
+	tween.tween_property(speech, "modulate", Color("fff0b500"), 0.35)
+	tween.tween_callback(speech.queue_free)
 
 
 func _attach_picket_to_camera() -> void:
 	var picket := Sprite3D.new()
 	picket.name = "Picket"
-	picket.position = Vector3(1.2, -0.58, -2.5)
+	picket.position = Vector3(1.9, -0.98, -2.8)
 	picket.texture = _sprite_factory.picket_texture()
-	picket.pixel_size = 0.026
+	picket.pixel_size = 0.012
 	picket.texture_filter = BaseMaterial3D.TEXTURE_FILTER_NEAREST
 	picket.billboard = BaseMaterial3D.BILLBOARD_ENABLED
 	picket.no_depth_test = true
 	camera.add_child(picket)
+	_picket_visual = picket
 
 
 func _empty_commands() -> Array:
@@ -773,6 +971,7 @@ func _save_profile(automatic: bool) -> void:
 		},
 		"party": _party.duplicate(true),
 		"inventory": _inventory.duplicate(),
+		"equipment": _equipment_state.duplicate(true),
 	}
 	var result := Saves.write_atomic(profile)
 	if not result.get("ok", false):
@@ -816,6 +1015,8 @@ func _load_crawler_profile(report_result: bool) -> bool:
 	_inventory.clear()
 	for item_id in data.get("inventory", []):
 		_inventory.append(String(item_id))
+	_ensure_demo_archive()
+	_equipment_state = _equipment.normalize_state(data.get("equipment", _equipment_state), Content.all_items())
 	_clear_enemy_visuals()
 	_build_dungeon()
 	_place_camera(false)
