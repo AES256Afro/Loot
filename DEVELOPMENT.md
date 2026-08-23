@@ -32,21 +32,22 @@ tools/run.sh
 
 The wrapper also scans output because Godot can emit a script parse error while returning exit code zero. An engine or script error fails the command.
 
-## Playable spike controls
+## Playable crawler controls
 
-| Action | Keyboard and mouse | Controller |
+| Action | Keyboard | Controller |
 | --- | --- | --- |
-| Move | WASD | Left stick |
-| Camera | Mouse | Right stick |
-| Sprint | Shift | Left-stick press |
-| Jump | Space | A / Cross |
-| Attack | Left click or F | Right shoulder |
+| Step forward | W or Up | D-pad Up |
+| Step backward | S or Down | D-pad Down |
+| Turn left or right | A/D or Left/Right | D-pad Left/Right |
+| Interact | E, Space, or Enter | A / Cross |
+| Choose Strike, Power, Guard, or Expose | 1, 2, 3, or 4; buttons also work | Focused command buttons |
+| Change combat target | A/D or Left/Right; enemy buttons also work | Focused enemy buttons |
+| Resolve a complete plan | Enter, Space, or Resolve button | Focused Resolve button |
+| Reset the current plan | Backspace, Delete, or Reset Plan button | Focused Reset Plan button |
 | Save | F5 | Not bound in M00 |
 | Load | F9 | Not bound in M00 |
-| Restaff defeated enemy | R | Not bound in M00 |
-| Release or capture mouse | Escape or click | Not applicable |
 
-Defeat the Gutter Clerk with three attacks. A deterministic reward appears, the Herald and Picket react, and the profile autosaves through the atomic save path. Press R to repeat the encounter without a timer or reward penalty.
+Follow the map through six connected rooms. Combat freezes while commands are chosen for each living party member. Inspect enemy intentions, file one command per member, then resolve the exchange. The Pressure Junction interaction is optional; if primed, Vell's next Power damages every living enemy. Each cleared encounter grants a deterministic reward. The Hearthfold Anchor heals the party and can start another procedural expedition without a timer, gear loss, or reward penalty.
 
 ## Export templates and builds
 
@@ -68,25 +69,28 @@ Generated builds go under `builds/` and are intentionally ignored by Git. Local 
 ```text
 content/            Authored JSON definitions
 scenes/             Godot scenes
-scripts/actors/     Player and enemy behavior
+scripts/combat/     Deterministic stopped-time combat rules
 scripts/content/    Definition loading and validation
 scripts/core/       Cross-system event stream
-scripts/game/       Spike composition and runtime flow
+scripts/dungeon/    Seeded dungeon topology and navigation
+scripts/game/       Crawler composition and runtime flow
 scripts/loot/       Deterministic reward resolution
 scripts/save/       Transactional local persistence
+scripts/ui/         Crawler HUD and command presentation
+scripts/visual/     Procedural low-resolution sprite generation
 tests/              Headless automated tests
 tools/              Run, check, validation, and export commands
 ```
 
 ## Save behavior
 
-The spike profile is stored in Godot's per-project user-data directory as `profiles/spike_save.json`. A write is first flushed and parsed as a temporary file. The prior primary is rotated to `.bak`, then the verified temporary file becomes the primary. Loading falls back to the backup if the primary is invalid.
+The crawler profile is stored in Godot's per-project user-data directory as `profiles/spike_save.json`; the historical filename is retained so old spike inventory can be imported. A write is first flushed and parsed as a temporary file. The prior primary is rotated to `.bak`, then the verified temporary file becomes the primary. Loading falls back to the backup if the primary is invalid.
 
 The automated tests use a separate `test_artifacts/atomic_save_test.json` path and remove only those scoped test files.
 
 ## Content rule
 
-Every production definition needs an immutable namespaced ID. The current validator rejects duplicate IDs, missing player-facing text, invalid rarity or slot values, non-positive drop weights, and missing or malformed tags. The three M00 rewards are proof data, not the promised final catalog.
+Every production definition needs an immutable namespaced ID. The current validator rejects duplicate item or enemy IDs, missing player-facing text, invalid rarity or slot values, non-positive drop weights, invalid enemy combat values, and missing or malformed tags. The three M00 rewards and three M00 enemy definitions are proof data, not the promised final catalogs.
 
 ## Continuous integration
 

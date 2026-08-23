@@ -58,7 +58,7 @@ The goal is to preserve the desired categories of fun while creating our own exp
 
 ## Audience
 
-- Players who enjoy Diablo-style build experimentation and loot hunting.
+- Players who enjoy Wizardry-style first-person party crawling combined with modern loot-driven build experimentation.
 - Players who enjoy revisiting broad MMO-like zones but prefer solo-friendly, non-expiring progress.
 - Players who like systemic comedy and reactive commentary.
 - Collectors who want searchable, expandable storage and completion goals.
@@ -98,7 +98,7 @@ Build commitment should create identity during an expedition, not punish experim
 
 1. **Prepare:** choose a discipline loadout, equipment, powers, consumables, target loot, and a zone contract in the Hearthfold or a settlement.
 2. **Explore:** travel through a zone, gather resources, find routes, meet factions, solve local events, and discover lairs.
-3. **Fight:** use readable action combat against ecological enemy groups, elites, champions, and bosses.
+3. **Fight:** inspect visible intentions, plan a command for each party member while time is stopped, and resolve readable tactical exchanges against ecological enemy groups, elites, champions, and bosses.
 4. **Get paid:** receive equipment, materials, powers, Caches, recipes, reputation, trophies, and Spotlight bonuses.
 5. **Adapt:** equip a drop immediately, bank it remotely at limited field terminals, or continue with an expedition modifier.
 6. **Change the zone:** victories and choices alter control, hazards, routes, population, and available events.

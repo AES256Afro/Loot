@@ -18,6 +18,7 @@ func _initialize() -> void:
 		quit(1)
 		return
 	var definitions: Dictionary = registry.get("item_definitions")
-	print("CONTENT VALIDATION PASSED: %d spike item definitions." % definitions.size())
+	var enemies: Dictionary = registry.get("enemy_definitions")
+	print("CONTENT VALIDATION PASSED: %d item definitions and %d enemy definitions." % [definitions.size(), enemies.size()])
 	registry.free()
 	quit(0)

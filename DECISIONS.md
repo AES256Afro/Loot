@@ -5,7 +5,9 @@
 | Topic | Current decision | Reason |
 | --- | --- | --- |
 | World structure | Persistent zones connected by anchors | Supports relaxed exploration and distinct ecology without timed floors. |
-| Genre | Third-person 3D action RPG | Best fit for readable powers, gear, bosses, towns, and large zones. |
+| Genre | First-person party dungeon crawler | The user approved a more scalable crawler format for procedural zones, massive loot breadth, party builds, and reactive writing. |
+| Combat cadence | Fully stopped plan-and-resolve rounds | The player may inspect indefinitely, choose one action per living party member, preview enemy intentions, and explicitly resolve the exchange. |
+| Visual direction | Shaded lo-fi pixel presentation over low-resolution 3D | Preserves spatial dungeon atmosphere and colored lighting while keeping enemy, room, item, and zone production scalable. |
 | Primary mode | Single-player offline first | Keeps the core game durable and prevents networking from blocking the slice. |
 | Engine | Godot 4.7.2 stable with typed GDScript and GL Compatibility renderer | The local spike imports, validates content, passes deterministic and persistence tests, and loads its main scene. Export and interactive feel gates remain open. |
 | Progression | Capped vertical ranks plus broad horizontal mastery | Supports long grinding without making old zones meaningless. |
@@ -66,9 +68,9 @@ Some pressure concepts may later be prototyped as clearly labeled, reversible ch
 
 ## Assumptions to validate in the first prototype
 
-1. Third-person over-the-shoulder combat is the desired camera rather than first-person.
-2. The initial visual target should be stylized mid-detail 3D rather than photorealism or strict pixel art.
-3. One character can unlock all Disciplines, with loadout commitment occurring per expedition.
+1. A four-member party creates useful build breadth without making equipment management exhausting.
+2. Low-resolution 3D geometry plus pixel-styled creatures produces a coherent shaded lo-fi look rather than feeling like an ordinary 3D game under a filter.
+3. One profile can unlock all Disciplines, with loadout commitment occurring per expedition and party member.
 4. The Hearthfold is entered through a short transition instead of existing as a physically seamless room behind every door.
 5. Zones use authored macro layouts plus variable encounters and state, not fully procedural terrain.
 6. Humor is entertaining when it reacts specifically, remembers selectively, changes real systems, and can be tuned rather than speaking continuously.
@@ -77,7 +79,7 @@ Some pressure concepts may later be prototyped as clearly labeled, reversible ch
 
 ## Decisions that should wait for evidence
 
-- Exact visual art direction and character proportions.
+- Exact internal viewport resolution, sprite scale, portrait proportions, and zone palette limits.
 - Whether combat uses stamina in addition to Drive and Strain.
 - Exact number of active powers on controller.
 - Class-swap restrictions outside safe areas.
@@ -93,8 +95,8 @@ Some pressure concepts may later be prototyped as clearly labeled, reversible ch
 
 These do not block the planning foundation. They should be settled before visual production:
 
-1. Should the default camera be third-person, first-person, or switchable?
-2. Should the tone lean darker and more brutal, more absurd and colorful, or stay evenly split?
-3. Is this intended primarily as a solo game, or is eventual co-op a must-have release requirement?
-4. Do you prefer stylized 3D that a small team can produce at scale, or a more realistic look with fewer total assets?
+1. Does cardinal first-person movement feel better as an animated step, an instant step, or a player setting?
+2. Should the party remain four combatants, or should a later prototype compare three and five?
+3. Should the tone lean darker and more brutal, more absurd and colorful, or stay evenly split?
+4. Is eventual co-op a must-have release requirement, or should the complete game remain solo-first indefinitely?
 5. Should gods be mostly optional build patrons, or central antagonists whose conflicts drive every zone?

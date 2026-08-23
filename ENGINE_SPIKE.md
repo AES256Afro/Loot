@@ -1,5 +1,7 @@
 # M00 Engine Spike Record
 
+> Historical note: this document records the superseded third-person spike. On 2026-08-23 the user approved the first-person shaded pixel crawler direction in `PIVOT_FIRST_PERSON_CRAWLER.md`. The engine, persistence, content, export, and CI evidence remains applicable; the controller and combat-feel conclusions do not.
+
 ## Decision snapshot
 
 | Field | Recorded value |
