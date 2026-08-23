@@ -445,6 +445,26 @@ func complete_dungeon_return(state: Dictionary) -> Dictionary:
 	}
 
 
+func leave_dungeon_early(state: Dictionary) -> Dictionary:
+	var next_state := normalize_state(state)
+	var dungeon: Dictionary = next_state.get("dungeon", {})
+	if not bool(dungeon.get("return_pending", false)):
+		next_state["active_view"] = "kingdom"
+		return {"ok": true, "message": "Returned to the kingdom map. No expedition was pending.", "state": next_state}
+	next_state["q"] = int(dungeon.get("entrance_q", next_state.get("q", 0)))
+	next_state["r"] = int(dungeon.get("entrance_r", next_state.get("r", 0)))
+	next_state["selected_q"] = int(next_state["q"])
+	next_state["selected_r"] = int(next_state["r"])
+	dungeon["return_pending"] = false
+	next_state["dungeon"] = dungeon
+	next_state["active_view"] = "kingdom"
+	return {
+		"ok": true,
+		"message": "Safely extracted to the exact entrance hex. All owned items and accepted quests remain. No completion reward was claimed.",
+		"state": next_state,
+	}
+
+
 func lore_by_id(lore_id: String) -> Dictionary:
 	_ensure_loaded()
 	for raw_lore in definition.get("lore_fragments", []):

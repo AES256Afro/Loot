@@ -59,6 +59,7 @@ M04C is complete when an exported macOS build can:
 - No real-world schedules, quest expiration, resource decay, store refresh timers, or offline world advancement.
 - No second top-down combat system. World encounters continue into the established first-person stopped-time party presentation.
 - No resource weight, field capacity, destructive overflow, durability, travel stamina, or mandatory transport cost.
+- No dungeon lock-in. The party can extract to the exact entrance hex at any time, retaining all owned items and accepted quests without receiving completion rewards.
 
 ## Implemented proof notes
 
