@@ -7,7 +7,7 @@ This file is the evidence ledger for runnable work. The roadmap remains the scop
 | Milestone | State | Implemented | Remaining gate |
 | --- | --- | --- | --- |
 | M00 Product lock and engine spike | In progress | Approved first-person pixel-crawler direction; deterministic six-room critical path; cardinal exploration; four-member stopped-time planning; visible intentions; three enemy definitions and sprites; optional pressure-line interaction; deterministic rewards; commentary; no-loss defeat recovery; Hearthfold return; repeat seeds; atomic save/load; verified macOS export | User feel review and native Windows run or agreed substitute |
-| M01 Repository, project, and quality harness | Acceptance passed; dependency held | Git repository, project layout, ignore and formatting rules, helper commands, item and enemy validators, 49-assertion test runner, runtime smoke, three export presets, macOS/Windows/Linux artifact paths, fresh-clone proof, passing historical CI, setup docs, and asset-source docs | M00 dependency gate and current-branch CI publication |
+| M01 Repository, project, and quality harness | Acceptance passed; dependency held | Git repository, project layout, ignore and formatting rules, helper commands, item and enemy validators, 49-assertion test runner, runtime smoke, three export presets, macOS/Windows/Linux artifact paths, fresh-clone proof, passing current CI, setup docs, and asset-source docs | M00 dependency gate only |
 | M02 Content registry, event stream, and humor risk spike | In progress | Immutable item and enemy IDs, validated JSON definitions, central event stream, Herald and Picket M00 lines, promoted Form Auditor presentation, and gameplay event seams | Full schemas and references, localization, required commentary counts, callback memory, Spotlight, performance and repetition simulations |
 
 ## Most recent local evidence
@@ -22,7 +22,7 @@ This file is the evidence ledger for runnable work. The roadmap remains the scop
 - Visual inspection: default and expanded window layouts inspected; first-pass panel overlap, emissive clipping, and map crowding were fixed and reverified
 - Windows cross-export: passed, 98 MB x86-64 PE artifact; native runtime not yet verified
 - Fresh-clone proof: passed from local commit `6daf98f`; import, validation, 20 tests, and runtime smoke all passed without the original `.godot` cache
-- GitHub CI: passed in pull-request run `32442747080`; validation, tests, runtime smoke, Linux export, and artifact upload completed with no annotations
+- GitHub CI: passed in first-person crawler pull-request run `32656147916`; validation, 49 assertions, runtime smoke, Linux export, and artifact upload completed successfully
 - Interactive feel: mechanically played through and visually inspected by Codex; player judgment on navigation cadence, planning depth, readability, and humor remains open
 
 ## Definition of progress
