@@ -2,17 +2,17 @@
 
 ## 1. Technical direction
 
-Use the current stable Godot 4 release, pinned in the repository when implementation begins, with typed GDScript and a data-driven content layer.
+Use Godot 4.7.2 stable, pinned in the repository, with typed GDScript and a data-driven content layer. The approved runtime direction is a low-resolution first-person 3D dungeon viewport beneath a resolution-independent interface, with deterministic plan-and-resolve combat isolated from presentation.
 
 Why this direction:
 
-- fast iteration for a solo or small-team 3D prototype;
+- fast iteration for a solo or small-team first-person 3D and pixel-art prototype;
 - open source and no per-install royalty dependency;
 - strong scene, resource, input, animation, navigation, audio, and editor-tool workflows;
 - GDScript keeps the initial build simple while typed boundaries and automated validation protect the larger content catalog;
 - the game can remain offline-first without an account service.
 
-The engine choice is still an M00 validation gate. A one-day movement, combat, save, and content-loading spike should confirm it before content production begins.
+The engine choice passed the initial import, content, test, save, and export harness. M00 remains open only for exported first-person crawler play review and the agreed cross-platform runtime gate.
 
 ## 2. Repository shape
 
@@ -46,6 +46,7 @@ Loot/
   scenes/
     actors/
     combat/
+    crawler/
     hearthfold/
     ui/
     world/
@@ -55,11 +56,13 @@ Loot/
     combat/
     content/
     core/
+    dungeon/
     inventory/
     loot/
     save/
     simulation/
     ui/
+    visual/
     world/
   tests/
     content/
@@ -69,7 +72,7 @@ Loot/
   tools/
 ```
 
-The planning files stay at the root until the executable project exists. They can move under `docs/` once links and contributor navigation are updated.
+The executable project exists. Planning files remain at the root for now so project navigation and existing links stay stable; a later documentation-only migration may move them under `docs/` atomically.
 
 ## 3. Runtime boundaries
 
@@ -79,7 +82,7 @@ Scenes, animation, particles, audio, cameras, UI, input prompts, and accessibili
 
 ### Gameplay domain
 
-Typed gameplay objects define damage, statuses, resources, powers, cooldowns, equipment laws, interactions, objectives, and actor state. Game rules operate on data and emit results that presentation can animate.
+Typed gameplay objects define dungeon topology, party and enemy state, visible intentions, commands, targets, damage, statuses, resources, powers, equipment laws, interactions, objectives, and actor state. Combat rules duplicate planning inputs, resolve deterministic results, and emit a log that presentation can animate without changing outcomes.
 
 ### Simulation layer
 

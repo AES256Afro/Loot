@@ -61,6 +61,14 @@ M00-M24 should treat these as release blockers:
 - R17: movement, camera, attack query, and enemy seams now exist. No automated result can close combat-feel risk; an observed interactive playtest is still required.
 - Newly observed tooling issue under R25: Godot can emit a parse error with exit code zero for a custom headless script. The check command now fails on engine and script error markers as well as nonzero exit status.
 
+## First-person crawler pivot evidence, 2026-08-23
+
+- R17: the exported macOS build completed a six-room expedition with three stopped-time combats, visible intentions, four party command sets, an environmental combination, a promoted encounter, rewards, and Hearthfold return. This proves the loop is operable, not that it is fun or deep enough. User play review and the 15-minute combat gate remain open.
+- R18: visual inspection at default and expanded window sizes caught overlapping `PanelContainer` content, an overcrowded dungeon map, and clipped emissive colors. The layouts and lighting were corrected and reverified. More enemy groups, effects, accessibility scaling, and target hardware remain open.
+- R25: Godot 4.7.2 imported and smoke-loaded the replacement first-person main scene, validated three items plus three enemies, passed 49 assertions, exported a 179 MB ad-hoc signed universal macOS app, and passed strict deep signature verification. Native Windows execution and measured frame time remain open.
+- R03 and R04: M00 now demonstrates distinct Herald and Picket reactions across exploration, maintenance, combat, victory, defeat recovery, reward, and Hearthfold events. It does not yet satisfy the repetition, callback, blind-speaker, or interruption budgets.
+- Newly observed process risk under R25: macOS may reuse an already-running build with the same bundle identifier after a new export. Export verification must close the prior process before relaunching or it can accidentally inspect stale gameplay.
+
 ## Review cadence
 
 - Review the register at every release gate.

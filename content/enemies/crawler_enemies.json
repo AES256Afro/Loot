@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "enemies": [
+    {
+      "id": "enemy.gutterbloom.filing_larva",
+      "display_name": "Filing Larva",
+      "max_hp": 9,
+      "damage": 3,
+      "sprite_key": "filing_larva",
+      "description": "A hungry document with legs, teeth, and absolutely no retention policy.",
+      "tags": ["gutterbloom", "vermin", "paperwork"]
+    },
+    {
+      "id": "enemy.gutterbloom.pipe_goblin",
+      "display_name": "Pipe Goblin",
+      "max_hp": 14,
+      "damage": 4,
+      "sprite_key": "pipe_goblin",
+      "description": "It owns one wrench and the confidence of someone who owns two.",
+      "tags": ["gutterbloom", "goblin", "hazard"]
+    },
+    {
+      "id": "enemy.gutterbloom.form_auditor",
+      "display_name": "Form Auditor",
+      "max_hp": 28,
+      "damage": 6,
+      "sprite_key": "form_auditor",
+      "description": "Promoted beyond competence and therefore considered structurally complete.",
+      "tags": ["gutterbloom", "promoted", "bureaucracy", "boss"]
+    }
+  ]
+}
