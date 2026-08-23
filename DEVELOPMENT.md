@@ -32,7 +32,22 @@ tools/run.sh
 
 The wrapper also scans output because Godot can emit a script parse error while returning exit code zero. An engine or script error fails the command.
 
-## Playable crawler controls
+## Kingdom and town controls
+
+| Action | Keyboard or mouse |
+| --- | --- |
+| Inspect a kingdom hex | Click any visible or fogged hex |
+| Travel | Select a hex, then choose Travel to Hex |
+| Use a site | Stand on its hex and choose the named site action |
+| Move through Latchmarket | WASD or arrows; clicking a building approaches it |
+| Enter a town service | E near a building, click Enter Selected Location, or press Enter/Space near it |
+| Close a service panel | Click Close or press Escape |
+| Inspect the strategic Archive summary | I |
+| Save or load any active view | F5 or F9 |
+
+Kingdom travel has no movement-point cap or mandatory end turn. Strategic Pulses record deterministic world progress but never prevent continued travel. Town walking has no stamina, hunger, encumbrance, or transport cost. The Courtesy Drain map site opens the crawler controls below.
+
+## First-person crawler controls
 
 | Action | Keyboard | Controller |
 | --- | --- | --- |
@@ -86,13 +101,14 @@ scripts/save/       Transactional local persistence
 scripts/social/     Persistent actors, typed memory, relationships, and social checks
 scripts/ui/         Crawler HUD and command presentation
 scripts/visual/     Procedural sprites and generated-art runtime extraction
+scripts/world/      Deterministic kingdom geography, travel, resources, events, quests, lore, stores, and exact returns
 tests/              Headless automated tests
 tools/              Run, check, validation, and export commands
 ```
 
 ## Save behavior
 
-The crawler profile is stored in Godot's per-project user-data directory as `profiles/spike_save.json`; the historical filename is retained so old spike inventory can be imported. A write is first flushed and parsed as a temporary file. The prior primary is rotated to `.bak`, then the verified temporary file becomes the primary. Loading falls back to the backup if the primary is invalid. The profile now includes Scrip's actor identity, at most four typed memories, relationship pressures, growth, appearance marks and count, bar history, current posture, promise, social stats, and any committed but unresolved office outcome. Raw dialogue transcripts are not saved.
+The shared profile is stored in Godot's per-project user-data directory as `profiles/spike_save.json`; the historical filename is retained so old spike inventory can be imported. A write is first flushed and parsed as a temporary file. The prior primary is rotated to `.bak`, then the verified temporary file becomes the primary. Loading falls back to the backup if the primary is invalid. The profile includes the dungeon run, party, uncapped Archive, equipment, Scrip's bounded actor memory and relationships, plus kingdom position, active view, discoveries, resources, Strategic Pulses, claimed deposits, event decisions, lore, purchases, quests, town position, and an exact dungeon entrance anchor. Older crawler profiles deterministically receive a default kingdom state without losing existing progression. Raw dialogue transcripts are not saved.
 
 The automated tests use a separate `test_artifacts/atomic_save_test.json` path and remove only those scoped test files.
 
@@ -104,4 +120,4 @@ Every production definition needs an immutable namespaced ID. The current valida
 
 `.github/workflows/ci.yml` pins Godot and its export templates to 4.7.2. It imports the project, validates content, runs tests, smoke-loads the main scene, exports a Linux development build, and uploads that build as an artifact.
 
-The workflow is proven on GitHub. M04B pull-request run `32662209688` and post-merge `main` run `32662260267` completed validation, all 81 assertions, runtime smoke, Linux export, and artifact upload with Actions v7 on the hosted runner. M04A pull-request run `32659691807` and post-merge `main` run `32659740611` remain historical 65-assertion evidence. The earlier 49-assertion crawler run is also historical evidence only.
+The current local M04C suite contains 109 assertions and is pending its publication CI run. The last published workflow evidence is M04B pull-request run `32662209688` and post-merge `main` run `32662260267`, which completed validation, all 81 assertions, runtime smoke, Linux export, and artifact upload with Actions v7 on the hosted runner. M04A pull-request run `32659691807` and post-merge `main` run `32659740611` remain historical 65-assertion evidence. The earlier 49-assertion crawler run is also historical evidence only.
