@@ -1,0 +1,243 @@
+{
+  "schema_version": 1,
+  "kingdom": {
+    "id": "kingdom.reach.gutterbloom",
+    "display_name": "The Gutterbloom Reach",
+    "subtitle": "Free Roof Compact frontier, Water Continuity claim disputed",
+    "width": 14,
+    "height": 10,
+    "seed": 20260823,
+    "start": {"q": 1, "r": 5},
+    "description": "A strategic frontier where merchant roofs, fungal roads, exhausted water offices, and one extremely portable home dispute who is infrastructure."
+  },
+  "roads": [
+    {"q": 1, "r": 5}, {"q": 2, "r": 5}, {"q": 3, "r": 5}, {"q": 4, "r": 5},
+    {"q": 5, "r": 5}, {"q": 6, "r": 5}, {"q": 7, "r": 5}, {"q": 8, "r": 5},
+    {"q": 9, "r": 5}, {"q": 10, "r": 5}, {"q": 11, "r": 5}, {"q": 12, "r": 5},
+    {"q": 3, "r": 4}, {"q": 4, "r": 3}, {"q": 5, "r": 3}, {"q": 6, "r": 3},
+    {"q": 7, "r": 3}, {"q": 8, "r": 3}, {"q": 9, "r": 3},
+    {"q": 5, "r": 6}, {"q": 5, "r": 7}, {"q": 6, "r": 7}, {"q": 7, "r": 7},
+    {"q": 8, "r": 7}, {"q": 9, "r": 7}, {"q": 10, "r": 7}
+  ],
+  "sites": [
+    {
+      "id": "site.reach.hearthfold_road_anchor",
+      "display_name": "Hearthfold Road Anchor",
+      "type": "anchor",
+      "q": 1,
+      "r": 5,
+      "safety": "sanctuary",
+      "provenance": "confirmed",
+      "description": "A brass threshold stands in a patch of road that has reluctantly accepted indoor plumbing.",
+      "actions": ["enter_hearthfold", "discover_lore"]
+    },
+    {
+      "id": "site.reach.latchmarket_edge",
+      "display_name": "Latchmarket Edge",
+      "type": "town",
+      "q": 3,
+      "r": 5,
+      "safety": "safe",
+      "provenance": "observed",
+      "description": "A roof-market settlement built above the drains, below the rain, and beside several incompatible definitions of public space.",
+      "actions": ["enter_town", "discover_lore"]
+    },
+    {
+      "id": "site.reach.invoice_scrapfield",
+      "display_name": "Invoice Scrapfield",
+      "type": "resource",
+      "q": 5,
+      "r": 3,
+      "safety": "contested",
+      "provenance": "confirmed",
+      "description": "Storm runoff sorted several decades of municipal metalwork into convenient piles and one inconvenient union.",
+      "resource": {"id": "salvage", "amount": 18, "label": "Salvage"},
+      "actions": ["claim_resource", "discover_lore"]
+    },
+    {
+      "id": "site.reach.remembering_garden",
+      "display_name": "Remembering Garden",
+      "type": "resource",
+      "q": 5,
+      "r": 7,
+      "safety": "contested",
+      "provenance": "reported",
+      "description": "A cultivated spore bed produces alchemical glass and increasingly specific complaints about pruning.",
+      "resource": {"id": "spore_glass", "amount": 7, "label": "Spore Glass"},
+      "actions": ["claim_resource", "discover_lore"]
+    },
+    {
+      "id": "site.reach.tollmold_right_of_way",
+      "display_name": "Tollmold Right of Way",
+      "type": "event",
+      "q": 7,
+      "r": 5,
+      "safety": "contested",
+      "provenance": "observed",
+      "description": "A sapient fungal colony has grown a bridge, three toll booths, and a constitutional theory overnight.",
+      "actions": ["inspect_event", "discover_lore"],
+      "choices": [
+        {"id": "recognize_crossing", "label": "Recognize the crossing", "result": "The road remains open. Tollmold respect rises and Latchmarket receives a legal headache."},
+        {"id": "negotiate_passage", "label": "Negotiate public passage", "result": "Guile and local information secure free party travel without erasing the colony's claim."},
+        {"id": "leave_event", "label": "Leave it unresolved", "result": "The event remains available and nothing expires while ignored."}
+      ]
+    },
+    {
+      "id": "site.reach.courtesy_drain",
+      "display_name": "The Courtesy Drain",
+      "type": "dungeon",
+      "q": 10,
+      "r": 5,
+      "safety": "hostile",
+      "provenance": "confirmed",
+      "description": "An Underworks service tunnel interprets intrusion as a maintenance request and combat as an improperly formatted reply.",
+      "actions": ["enter_dungeon", "discover_lore"],
+      "quest_id": "quest.reach.courtesy_drain_survey"
+    },
+    {
+      "id": "site.reach.floodgate_overlook",
+      "display_name": "Floodgate Overlook",
+      "type": "lore",
+      "q": 9,
+      "r": 3,
+      "safety": "contested",
+      "provenance": "inferred",
+      "description": "The view explains the water level, the broken road, and why three mapmakers have requested reassignment.",
+      "actions": ["discover_lore"]
+    },
+    {
+      "id": "site.reach.skip_nalls_caravan",
+      "display_name": "Skip Nall's Caravan Rest",
+      "type": "social",
+      "q": 8,
+      "r": 7,
+      "safety": "semi_safe",
+      "provenance": "reported",
+      "description": "A courier camp where parcels, rumors, and chairs are all temporarily between destinations.",
+      "actions": ["inspect_social", "discover_lore"]
+    },
+    {
+      "id": "site.reach.shrine_of_prior_arrival",
+      "display_name": "Shrine of Prior Arrival",
+      "type": "shrine",
+      "q": 6,
+      "r": 3,
+      "safety": "semi_safe",
+      "provenance": "folklore",
+      "description": "The shrine promises safe passage to anyone who can prove they have already arrived.",
+      "actions": ["inspect_shrine", "discover_lore"]
+    },
+    {
+      "id": "site.reach.eastern_claim_gate",
+      "display_name": "Eastern Claim Gate",
+      "type": "border",
+      "q": 12,
+      "r": 5,
+      "safety": "safe",
+      "provenance": "confirmed",
+      "description": "The next kingdom begins beyond a gate whose paperwork currently outweighs the gate.",
+      "actions": ["inspect_border", "discover_lore"]
+    }
+  ],
+  "town": {
+    "id": "town.reach.latchmarket_edge",
+    "display_name": "Latchmarket Edge",
+    "subtitle": "Safe settlement, disputed roofline, all prices capable of testimony",
+    "locations": [
+      {"id": "town.general_store", "display_name": "Vellum & Valve General Store", "type": "store", "x": 252, "y": 214, "description": "Regional equipment, field supplies, and several warranties already voided for convenience."},
+      {"id": "town.delvers_registry", "display_name": "Delvers Registry", "type": "guild", "x": 648, "y": 190, "description": "Guild contracts, route surveys, training records, and professional disagreement about the word delver."},
+      {"id": "town.bent_pipe", "display_name": "The Bent Pipe", "type": "bar", "x": 842, "y": 418, "description": "A semi-safe bar. Weapons checked. Insults unrestricted. Relationships persist."},
+      {"id": "town.anchor_house", "display_name": "Anchor House", "type": "safe_room", "x": 478, "y": 510, "description": "A stable Hearthfold threshold with healing, saving, and travel services."},
+      {"id": "town.contract_board", "display_name": "Contract Board", "type": "quests", "x": 212, "y": 500, "description": "Six opportunities with visible rewards and no real-world deadlines."},
+      {"id": "town.signal_kiosk", "display_name": "Signal and Rumor Kiosk", "type": "information", "x": 675, "y": 500, "description": "Confirmed facts, sourced reports, disputed claims, maps, and optional Lore Sauce."},
+      {"id": "town.market_plaza", "display_name": "Common Roof Plaza", "type": "social", "x": 520, "y": 330, "description": "A public social area where caravans, guilds, monsters, and citizens practice adjacent coexistence."}
+    ]
+  },
+  "store": {
+    "id": "store.reach.vellum_valve",
+    "display_name": "Vellum & Valve General Store",
+    "starting_marks": 180,
+    "stock": [
+      {"item_id": "item.gutterbloom.helm_of_declared_intent", "price": 34},
+      {"item_id": "item.gutterbloom.apron_of_pockets", "price": 38},
+      {"item_id": "item.gutterbloom.charm_of_shared_liability", "price": 72},
+      {"item_id": "item.gutterbloom.mildew_mantle", "price": 42}
+    ]
+  },
+  "quests": [
+    {
+      "id": "quest.reach.courtesy_drain_survey",
+      "display_name": "Courtesy Drain Survey",
+      "source": "Delvers Registry",
+      "summary": "Enter the Courtesy Drain, file one complete expedition, and return to the exact entrance hex.",
+      "reward": "45 Marks, 12 Salvage, full dungeon baseline loot",
+      "risk": "Hostile first-person lair with stopped-time combat",
+      "consequence": "Registry information improves. No route or reward is lost on defeat.",
+      "repeatable": true
+    },
+    {
+      "id": "quest.reach.tollmold_right_of_way",
+      "display_name": "Tollmold Right of Way",
+      "source": "Contract Board",
+      "summary": "Resolve the constitutional fungus occupying the Cracked Mile.",
+      "reward": "Route Seal and relationship leverage",
+      "risk": "Negotiation, toll, or optional combat in a later expansion",
+      "consequence": "Changes route information without deleting the colony.",
+      "repeatable": false
+    },
+    {
+      "id": "quest.reach.missing_price_tags",
+      "display_name": "The Missing Price Tags",
+      "source": "Vellum & Valve",
+      "summary": "Find the party that removed price tags from items and attached them to wildlife.",
+      "reward": "Store discount and equipment information",
+      "risk": "Potentially judgmental fauna",
+      "consequence": "Improves store service after completion.",
+      "repeatable": false
+    },
+    {
+      "id": "quest.reach.anchor_under_warranty",
+      "display_name": "Anchor Under Warranty",
+      "source": "Anchor House",
+      "summary": "Trace a material claim that technically belongs to the Courtesy Drain.",
+      "reward": "Anchor route information",
+      "risk": "Administrative contradiction",
+      "consequence": "Adds a travel option and a future social dispute.",
+      "repeatable": false
+    },
+    {
+      "id": "quest.reach.cracked_mile_census",
+      "display_name": "Cracked Mile Census",
+      "source": "Signal and Rumor Kiosk",
+      "summary": "Confirm which moving structures are residents, vehicles, or ambitious fungi.",
+      "reward": "Map intelligence and Lore Sauce",
+      "risk": "Low, unless a bridge answers incorrectly",
+      "consequence": "Improves map provenance labels.",
+      "repeatable": true
+    },
+    {
+      "id": "quest.reach.rain_order_preliminary",
+      "display_name": "Rain Order Preliminary",
+      "source": "Delvers Registry",
+      "summary": "Collect evidence that the Rain Treasurer's mandate is still legally active.",
+      "reward": "Boss-route intelligence and target-loot preview",
+      "risk": "Water Continuity attention",
+      "consequence": "Prepares the later Gutterbloom zone arc.",
+      "repeatable": false
+    }
+  ],
+  "lore_fragments": [
+    {"id": "lore.reach.floodgate_appeal", "category": "civic", "reliability": "confirmed", "text": "Floodgate 9 remains officially closed. The water has appealed and is currently winning.", "hint": "Standing water strengthens some electrical interactions."},
+    {"id": "lore.reach.crater_customs", "category": "history", "reliability": "disputed", "text": "Municipal historians insist this crater was always a customs office. The crater has declined to correct them.", "hint": "Disputed history can still identify an old route."},
+    {"id": "lore.reach.tax_fungus", "category": "bar", "reliability": "reported", "text": "The local ale is brewed from a fungus that remembers taxes. This explains the bitterness and several outstanding warrants.", "hint": "Bars collect relationship and route rumors."},
+    {"id": "lore.reach.prior_arrival", "category": "divine", "reliability": "folklore", "text": "The shrine promises safe passage to anyone who can demonstrate that they have already arrived.", "hint": "Shrines may trade proofs instead of currency."},
+    {"id": "lore.reach.bridge_claim", "category": "road", "reliability": "confirmed", "text": "Three guilds claim this bridge. None claim the underside.", "hint": "The underside remains a possible hidden route."},
+    {"id": "lore.reach.staffed_mine", "category": "resource", "reliability": "outdated", "text": "The map calls this an abandoned mine. The invoices call it fully staffed.", "hint": "Outdated maps may hide active resource sites."},
+    {"id": "lore.reach.courtesy_reply", "category": "dungeon", "reliability": "confirmed", "text": "The Courtesy Drain accepts every weapon strike as a maintenance reply. It has never accepted the tone.", "hint": "Dungeon reactions remember combat methods."},
+    {"id": "lore.reach.caravan_chairs", "category": "social", "reliability": "observed", "text": "At Skip Nall's camp, chairs are parcels that have briefly lost confidence.", "hint": "Traveling social sites can move after a Strategic Pulse."},
+    {"id": "lore.reach.roof_soil", "category": "town", "reliability": "observed", "text": "Latchmarket imports soil from ground level and exports the certainty that this was somebody else's idea.", "hint": "Town prosperity follows visible trade routes."},
+    {"id": "lore.reach.anchor_measure", "category": "anchor", "reliability": "confirmed", "text": "The anchor is seven legal inches from the road and several impossible miles from the Hearthfold.", "hint": "Discovered anchors preserve exact return positions."},
+    {"id": "lore.reach.border_weight", "category": "border", "reliability": "confirmed", "text": "The eastern gate's paperwork currently outweighs the gate. This is considered structural reinforcement.", "hint": "Future kingdom travel begins at visible border sites."},
+    {"id": "lore.reach.garden_pruning", "category": "resource", "reliability": "reported", "text": "The Remembering Garden has filed a pruning complaint naming everyone who walked past with scissors.", "hint": "Resource sites can develop named social consequences."}
+  ]
+}

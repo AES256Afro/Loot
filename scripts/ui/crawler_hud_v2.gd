@@ -9,6 +9,7 @@ signal interact_requested
 signal reward_closed
 signal new_expedition_requested
 signal return_to_dungeon_requested
+signal return_to_kingdom_requested
 signal bent_pipe_requested
 signal social_choice_selected(choice_id: String)
 signal archive_requested
@@ -53,6 +54,7 @@ var _reward_details: RichTextLabel
 var _hearthfold_modal: PanelContainer
 var _hearthfold_details: RichTextLabel
 var _bent_pipe_button: Button
+var _return_kingdom_button: Button
 var _social_modal: PanelContainer
 var _social_title: Label
 var _social_subtitle: Label
@@ -192,10 +194,12 @@ func hide_reward() -> void:
 	_reward_modal.hide()
 
 
-func show_hearthfold(summary: String, bar_available: bool = false, bar_status: String = "No recurring guest is currently available.") -> void:
+func show_hearthfold(summary: String, bar_available: bool = false, bar_status: String = "No recurring guest is currently available.", kingdom_available: bool = false) -> void:
 	_hearthfold_details.text = summary
 	_bent_pipe_button.disabled = not bar_available
 	_bent_pipe_button.tooltip_text = bar_status
+	_return_kingdom_button.disabled = not kingdom_available
+	_return_kingdom_button.tooltip_text = "Return to the persistent strategic map at the exact dungeon entrance." if kingdom_available else "No kingdom entrance is anchored to this Hearthfold visit."
 	_hearthfold_modal.show()
 	if bar_available:
 		_bent_pipe_button.grab_focus()
@@ -450,15 +454,19 @@ func _build_hearthfold_modal(parent: Control) -> PanelContainer:
 	buttons.alignment = BoxContainer.ALIGNMENT_CENTER
 	buttons.add_theme_constant_override("separation", 18)
 	content.add_child(buttons)
-	var return_button := _button("RETURN TO DUNGEON", Vector2(210, 54))
+	var return_button := _button("RETURN TO DUNGEON", Vector2(150, 54))
 	return_button.name = "Return"
 	return_button.pressed.connect(func() -> void: return_to_dungeon_requested.emit())
 	buttons.add_child(return_button)
-	_bent_pipe_button = _button("VISIT THE BENT PIPE", Vector2(240, 54))
+	_bent_pipe_button = _button("THE BENT PIPE", Vector2(165, 54))
 	_bent_pipe_button.name = "BentPipe"
 	_bent_pipe_button.pressed.connect(func() -> void: bent_pipe_requested.emit())
 	buttons.add_child(_bent_pipe_button)
-	var new_button := _button("NEW EXPEDITION", Vector2(210, 54))
+	_return_kingdom_button = _button("KINGDOM MAP", Vector2(165, 54))
+	_return_kingdom_button.name = "KingdomMap"
+	_return_kingdom_button.pressed.connect(func() -> void: return_to_kingdom_requested.emit())
+	buttons.add_child(_return_kingdom_button)
+	var new_button := _button("NEW EXPEDITION", Vector2(150, 54))
 	new_button.name = "NewExpedition"
 	new_button.pressed.connect(func() -> void: new_expedition_requested.emit())
 	buttons.add_child(new_button)
