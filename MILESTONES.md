@@ -133,6 +133,23 @@ This bridge milestone does not replace M05-M17. It proves their central player p
 - No durability, encumbrance, field storage cap, item loss, forced salvage, gear score gate, paid reward, claim timer, seasonal reset, or mandatory multiplayer.
 - This proof does not yet implement full stat derivation, crafting, procedural affixes, cache opening ceremonies, or production balance.
 
+## M04B - Dialogue changes the encounter demo
+
+**Depends on:** M04A runnable proof.
+
+Implement the focused recurring-actor and social-combat proof in `M04B_DIALOGUE_CHANGES_ENCOUNTER.md`. Promote one visibly surviving Form Auditor into Scrip, Repossessed Auditor; persist a bounded typed defeat memory; and present visible deterministic social checks on a later Promoted Office visit. Add The Bent Pipe as a semi-safe bar set where the current relationship can continue outside a dungeon.
+
+**Acceptance criteria**
+
+- Scrip remembers the expedition, room role, finishing party member, action, damage type, and relevant combat flags without storing the raw transcript.
+- A later return accurately cites at least two stored facts and offers checked Cite Record, Offer Partnership, and Taunt branches plus an unchecked Leave option.
+- Dialogue can prevent combat, change the combat roster and opening state, or intensify combat while preserving the critical route and baseline reward.
+- Presence, Insight, Guile, relationship contributions, difficulty, predicted result, and consequence are visible before commitment; the proof cannot be rerolled by reloading.
+- The shared-danger branch can move Scrip from enemy to temporary ally and then to friend through a second authored bar conversation, not one universal charisma roll.
+- The Bent Pipe is a distinct first-person semi-safe set with neutral-ground rules, no response timer, and no forced brawl.
+- Save/load preserves the actor record, bounded memories, relationships, growth, appearance history, bar visits, and current promise.
+- Automated checks, native macOS inspection, export verification, evidence documents, and remote `main` publication pass.
+
 # Phase 1: Combat proof
 
 ## M05 - Combat resources and damage pipeline
