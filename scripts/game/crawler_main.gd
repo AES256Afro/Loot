@@ -113,6 +113,10 @@ func _unhandled_input(event: InputEvent) -> void:
 			_load_crawler_profile(true)
 			get_viewport().set_input_as_handled()
 			return
+		if event.physical_keycode == KEY_K and String(_world_state.get("active_view", "")) == "dungeon":
+			_return_to_kingdom()
+			get_viewport().set_input_as_handled()
+			return
 		if event.physical_keycode in [KEY_I, KEY_ESCAPE]:
 			if world_hud.is_world_visible():
 				if event.physical_keycode == KEY_ESCAPE and world_hud.service_is_open():
@@ -904,13 +908,18 @@ func _enter_dungeon_from_world(site_id: String) -> void:
 
 
 func _return_to_kingdom() -> void:
-	if _mode != MODE_HEARTHFOLD:
+	if _world_state.is_empty() or String(_world_state.get("active_view", "")) != "dungeon":
 		return
-	var result := _worlds.complete_dungeon_return(_world_state)
+	if _mode in [MODE_MOVING, MODE_RESOLVING]:
+		hud.push_line("PICKET", "Extraction waits until the current motion resolves. This is physics, not policy.")
+		return
+	var result := _worlds.complete_dungeon_return(_world_state) if _mode == MODE_HEARTHFOLD else _worlds.leave_dungeon_early(_world_state)
 	_world_state = result.get("state", _world_state)
 	hud.hide_hearthfold()
+	hud.hide_reward()
+	hud.hide_social()
 	_show_kingdom_map()
-	_show_message_service("KINGDOM RETURN FILED", "Exact-position restoration  |  Persistent rewards", String(result.get("message", "Returned to the kingdom.")))
+	_show_message_service("KINGDOM RETURN FILED", "Exact-position restoration  |  Zero item loss", String(result.get("message", "Returned to the kingdom.")))
 
 
 func _show_store_service(notice: String = "") -> void:
