@@ -15,7 +15,7 @@ The project can use high-level genre inspiration, but it will not copy protected
 
 ## Current status
 
-The approved first-person shaded pixel crawler is the runnable main scene. M04A expands the six-room Gutterbloom foundation with 32 original equipment definitions, four slots for each of four party members, two Shared Relic slots, an uncapped Archive, favorites, comparison, two persistent loadouts, 18 simultaneously equipped law hooks, typed magnitude-aware hit reactions, electrical paper-doll animation, Taunt-driven targeting and dialogue, monster speech above the battlefield, and more than 120 authored conditional combat lines and exchanges. Generated project-owned portraits, enemies, equipment icons, and dungeon materials move the live composition toward the approved promo. The implementation is covered by 65 automated assertions; player feel remains a human gate. The focused contract is defined in [M04A_LOOT_CHANGES_PARTY.md](M04A_LOOT_CHANGES_PARTY.md).
+The approved first-person shaded pixel crawler is the runnable main scene. M04A expands the six-room Gutterbloom foundation with 32 original equipment definitions, an uncapped Archive, two persistent party loadouts, 18 simultaneously equipped law hooks, typed magnitude-aware hit reactions, electrical paper-doll animation, Taunt-driven targeting, monster speech, and more than 120 authored conditional combat lines and exchanges. M04B adds a persistent recurring actor, bounded typed defeat memory, five relationship pressures, three visible social stats, deterministic pre-combat choices, combat prevention and modification, an enemy-to-ally transition, and The Bent Pipe semi-safe bar where shared danger can become friendship. Generated project-owned portraits, enemies, equipment icons, and dungeon materials move the live composition toward the approved promo. The implementation is covered by 81 automated assertions plus a completed two-expedition native macOS acceptance route; player feel remains a human tuning gate. The focused contracts are [M04A_LOOT_CHANGES_PARTY.md](M04A_LOOT_CHANGES_PARTY.md) and [M04B_DIALOGUE_CHANGES_ENCOUNTER.md](M04B_DIALOGUE_CHANGES_ENCOUNTER.md).
 
 ## Product assumptions
 
@@ -42,11 +42,14 @@ The current M00 playable is a compact expedition in **The Gutterbloom**, a funga
 - 32 immediately testable equipment definitions, role compatibility, favorites, comparisons, four member slots, two Shared Relics, and Loadout A/B build swapping;
 - named equipment activations that alter Guard distribution, status spread, environmental payoff, targeting, counterattacks, healing, and party sequencing;
 - damage-type and magnitude-aware hit reactions plus conditional monster, victim, critical-hit, tactical, insult, and party-conversation dialogue;
+- Scrip, Repossessed Auditor as a persistent actor who remembers the actual Promoted Office defeat and grows before a later expedition;
+- transparent Presence, Insight, and Guile choices whose visible formulas can prevent combat, recruit Scrip for the opening exchange, or provoke a stronger rival on favorable initiative;
+- The Bent Pipe as a distinct first-person semi-safe bar with neutral-ground rules, relationship follow-up, and a proven enemy-to-friend route;
 - **Picket** and the **Herald Engine** reacting to rooms, maintenance choices, enemies, victory, defeat, and loot;
 - no combat timer, no gear loss, no reward reduction for repetition, full-party recovery on defeat, and full healing at the Hearthfold;
 - autosave, manual save/load, backup recovery, and new procedural expeditions that retain every reward.
 
-The broader 20-to-30-minute Gutterbloom vertical slice remains the next production target. It adds the settlement edge, semi-safe bar, richer procedural rooms, equipment and Archive interfaces, Spotlight and callback depth, Hearthfold upgrades, living-zone change, elite mutations, and the Rain Treasurer boss after the crawler combat foundation passes play review.
+The broader 20-to-30-minute Gutterbloom vertical slice remains the next production target. It expands the proven semi-safe bar and recurring-actor systems with the settlement edge, richer procedural rooms, Spotlight and callback depth, Hearthfold upgrades, living-zone change, elite mutations, and the Rain Treasurer boss after the crawler combat foundation passes play review.
 
 ## Documents
 
@@ -74,6 +77,7 @@ The broader 20-to-30-minute Gutterbloom vertical slice remains the next producti
 - [ASSET_SOURCES.md](ASSET_SOURCES.md): current asset provenance and the production asset rule.
 - [PIVOT_FIRST_PERSON_CRAWLER.md](PIVOT_FIRST_PERSON_CRAWLER.md): approved camera, combat, visual direction, reusable systems, and replacement M00 slice.
 - [M04A_LOOT_CHANGES_PARTY.md](M04A_LOOT_CHANGES_PARTY.md): the playable equipment-law, Archive, loadout, visual, hit-reaction, and dialogue proof.
+- [M04B_DIALOGUE_CHANGES_ENCOUNTER.md](M04B_DIALOGUE_CHANGES_ENCOUNTER.md): the playable recurring-rival, social-choice, encounter-change, semi-safe bar, and enemy-to-friend proof.
 - [GRUDGE_WEB.md](GRUDGE_WEB.md): recurring rivals, remembered defeats, cohorts, patrons, enemy-to-friend transitions, and dialogue-driven encounter rules.
 
 ## Build philosophy

@@ -9,6 +9,8 @@ signal interact_requested
 signal reward_closed
 signal new_expedition_requested
 signal return_to_dungeon_requested
+signal bent_pipe_requested
+signal social_choice_selected(choice_id: String)
 signal archive_requested
 signal archive_closed
 signal archive_equip_requested(item_id: String, destination_kind: String, destination_index: int)
@@ -50,6 +52,15 @@ var _reward_title: Label
 var _reward_details: RichTextLabel
 var _hearthfold_modal: PanelContainer
 var _hearthfold_details: RichTextLabel
+var _bent_pipe_button: Button
+var _social_modal: PanelContainer
+var _social_title: Label
+var _social_subtitle: Label
+var _social_portrait: TextureRect
+var _social_memory: RichTextLabel
+var _social_opening: RichTextLabel
+var _social_choices: VBoxContainer
+var _social_footer: Label
 var _archive_modal: PanelContainer
 var _archive_list: ItemList
 var _archive_filter: OptionButton
@@ -181,15 +192,69 @@ func hide_reward() -> void:
 	_reward_modal.hide()
 
 
-func show_hearthfold(summary: String) -> void:
+func show_hearthfold(summary: String, bar_available: bool = false, bar_status: String = "No recurring guest is currently available.") -> void:
 	_hearthfold_details.text = summary
+	_bent_pipe_button.disabled = not bar_available
+	_bent_pipe_button.tooltip_text = bar_status
 	_hearthfold_modal.show()
-	var new_button := _hearthfold_modal.get_node("Content/Buttons/NewExpedition") as Button
-	new_button.grab_focus()
+	if bar_available:
+		_bent_pipe_button.grab_focus()
+	else:
+		var new_button := _hearthfold_modal.get_node("Content/Buttons/NewExpedition") as Button
+		new_button.grab_focus()
 
 
 func hide_hearthfold() -> void:
 	_hearthfold_modal.hide()
+
+
+func show_social(
+	title: String,
+	subtitle: String,
+	memory_text: String,
+	opening_lines: Array,
+	options: Array,
+	bar_mode: bool = false
+) -> void:
+	_social_title.text = title
+	_social_subtitle.text = subtitle
+	_social_memory.text = memory_text
+	_social_portrait.texture = _assets.enemy_portrait("form_auditor")
+	var rendered_opening: PackedStringArray = []
+	for raw_line in opening_lines:
+		if typeof(raw_line) != TYPE_DICTIONARY:
+			continue
+		var line: Dictionary = raw_line
+		rendered_opening.append("[color=#f2c86d][b]%s[/b][/color]  %s" % [line.get("speaker", "Scrip"), line.get("line", "")])
+	_social_opening.text = "\n\n".join(rendered_opening)
+	_clear_children(_social_choices)
+	var first_button: Button
+	for raw_option in options:
+		if typeof(raw_option) != TYPE_DICTIONARY:
+			continue
+		var option: Dictionary = raw_option
+		var button := _button(RivalService.new().format_option(option), Vector2(748, 72))
+		button.alignment = HORIZONTAL_ALIGNMENT_LEFT
+		button.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		button.disabled = not bool(option.get("available", true))
+		var prediction := String(option.get("prediction", "NO CHECK"))
+		button.add_theme_color_override("font_color", Color("86e6a9") if prediction in ["PASS", "AVAILABLE"] else Color("f09a91") if prediction in ["FAIL", "LOCKED"] else Color("9ddfd8"))
+		button.pressed.connect(func() -> void: social_choice_selected.emit(String(option.get("id", ""))))
+		_social_choices.add_child(button)
+		if first_button == null and not button.disabled:
+			first_button = button
+	_social_footer.text = "SEMI-SAFE NEUTRAL GROUND  |  WEAPONS CHECKED  |  INSULTS UNRESTRICTED  |  NO RESPONSE TIMER" if bar_mode else "COMBAT REMAINS STOPPED  |  CHECKS ARE DETERMINISTIC  |  NO RESPONSE TIMER  |  BASELINE REWARD PRESERVED"
+	_social_modal.show()
+	if first_button != null:
+		first_button.grab_focus()
+
+
+func hide_social() -> void:
+	_social_modal.hide()
+
+
+func social_is_open() -> bool:
+	return _social_modal != null and _social_modal.visible
 
 
 func show_archive(definitions: Dictionary, inventory: Array, state: Dictionary) -> void:
@@ -215,7 +280,7 @@ func archive_is_open() -> bool:
 
 
 func modal_open() -> bool:
-	return _reward_modal.visible or _hearthfold_modal.visible or _archive_modal.visible
+	return _reward_modal.visible or _hearthfold_modal.visible or _archive_modal.visible or _social_modal.visible
 
 
 func _build_interface() -> void:
@@ -314,11 +379,13 @@ func _build_interface() -> void:
 	_reward_modal = _build_reward_modal(root)
 	_hearthfold_modal = _build_hearthfold_modal(root)
 	_archive_modal = _build_archive_modal(root)
+	_social_modal = _build_social_modal(root)
 	_enemy_panel.hide()
 	_command_panel.hide()
 	_reward_modal.hide()
 	_hearthfold_modal.hide()
 	_archive_modal.hide()
+	_social_modal.hide()
 
 
 func _build_reward_modal(parent: Control) -> PanelContainer:
@@ -373,7 +440,7 @@ func _build_hearthfold_modal(parent: Control) -> PanelContainer:
 	heading.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	content.add_child(heading)
 	_hearthfold_details = RichTextLabel.new()
-	_hearthfold_details.custom_minimum_size = Vector2(710, 330)
+	_hearthfold_details.custom_minimum_size = Vector2(710, 300)
 	_hearthfold_details.bbcode_enabled = true
 	_hearthfold_details.add_theme_font_size_override("normal_font_size", 19)
 	_hearthfold_details.add_theme_color_override("default_color", Color("d6efeb"))
@@ -383,14 +450,64 @@ func _build_hearthfold_modal(parent: Control) -> PanelContainer:
 	buttons.alignment = BoxContainer.ALIGNMENT_CENTER
 	buttons.add_theme_constant_override("separation", 18)
 	content.add_child(buttons)
-	var return_button := _button("RETURN TO DUNGEON", Vector2(270, 54))
+	var return_button := _button("RETURN TO DUNGEON", Vector2(210, 54))
 	return_button.name = "Return"
 	return_button.pressed.connect(func() -> void: return_to_dungeon_requested.emit())
 	buttons.add_child(return_button)
-	var new_button := _button("NEW EXPEDITION", Vector2(270, 54))
+	_bent_pipe_button = _button("VISIT THE BENT PIPE", Vector2(240, 54))
+	_bent_pipe_button.name = "BentPipe"
+	_bent_pipe_button.pressed.connect(func() -> void: bent_pipe_requested.emit())
+	buttons.add_child(_bent_pipe_button)
+	var new_button := _button("NEW EXPEDITION", Vector2(210, 54))
 	new_button.name = "NewExpedition"
 	new_button.pressed.connect(func() -> void: new_expedition_requested.emit())
 	buttons.add_child(new_button)
+	return modal
+
+
+func _build_social_modal(parent: Control) -> PanelContainer:
+	var modal := _panel(parent, Rect2(116, 76, 1368, 748), Color("081118f7"), Color("d3a94d"), 5)
+	modal.name = "SocialModal"
+	modal.mouse_filter = Control.MOUSE_FILTER_STOP
+	var content := _absolute_content(modal)
+	_social_title = _label(content, Rect2(28, 20, 1310, 42), 31, Color("f3cf76"))
+	_social_subtitle = _label(content, Rect2(30, 62, 1310, 30), 17, Color("80e4d6"))
+	_social_portrait = TextureRect.new()
+	_social_portrait.position = Vector2(30, 112)
+	_social_portrait.size = Vector2(278, 278)
+	_social_portrait.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	_social_portrait.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	_social_portrait.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	content.add_child(_social_portrait)
+	var record_heading := _label(content, Rect2(30, 406, 330, 28), 18, Color("f0c96f"))
+	record_heading.text = "INSPECTABLE MEMORY AND PRESSURES"
+	_social_memory = RichTextLabel.new()
+	_social_memory.position = Vector2(30, 440)
+	_social_memory.size = Vector2(350, 236)
+	_social_memory.bbcode_enabled = true
+	_social_memory.scroll_active = false
+	_social_memory.add_theme_font_size_override("normal_font_size", 16)
+	_social_memory.add_theme_font_size_override("bold_font_size", 16)
+	_social_memory.add_theme_color_override("default_color", Color("d6dfe0"))
+	content.add_child(_social_memory)
+	var dialogue_panel := _panel(content, Rect2(400, 108, 932, 146), Color("16111ce8"), Color("76548b"), 2)
+	var dialogue_content := _absolute_content(dialogue_panel)
+	_social_opening = RichTextLabel.new()
+	_social_opening.position = Vector2(18, 12)
+	_social_opening.size = Vector2(896, 120)
+	_social_opening.bbcode_enabled = true
+	_social_opening.scroll_active = false
+	_social_opening.add_theme_font_size_override("normal_font_size", 17)
+	_social_opening.add_theme_font_size_override("bold_font_size", 17)
+	_social_opening.add_theme_color_override("default_color", Color("e6e1e8"))
+	dialogue_content.add_child(_social_opening)
+	_social_choices = VBoxContainer.new()
+	_social_choices.position = Vector2(400, 270)
+	_social_choices.size = Vector2(932, 402)
+	_social_choices.add_theme_constant_override("separation", 7)
+	content.add_child(_social_choices)
+	_social_footer = _label(content, Rect2(28, 700, 1312, 28), 14, Color("a8b8bb"))
+	_social_footer.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	return modal
 
 
