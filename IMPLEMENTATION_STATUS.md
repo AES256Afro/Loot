@@ -25,7 +25,7 @@ This file is the evidence ledger for runnable work. The roadmap remains the scop
 - Hit and dialogue inspection: a fully guarded scratch produced a restrained portrait response and Moss's tiny-hit line; the subsequent Moss and Dena exchange reacted to the ineffective attack; damage-type presentation and electrical dialogue selection are separately covered by deterministic tests
 - Windows cross-export: passed, 106 MB x86-64 PE artifact; native Windows runtime remains unverified
 - Fresh-checkout proof: passed from the committed M04A tree; import, validation, all 65 assertions, and runtime smoke passed without the original `.godot` cache
-- GitHub CI: passed in first-person crawler pull-request run `32656147916`; validation, 49 assertions, runtime smoke, Linux export, and artifact upload completed successfully
+- GitHub CI: passed on M04A pull-request run `32659691807` and post-merge `main` run `32659740611`; validation, all 65 assertions, runtime smoke, Linux export, and artifact upload completed successfully
 - Interactive feel: mechanically played through and visually inspected by Codex; player judgment on hit weight, navigation cadence, planning depth, readability, and humor remains open for tuning
 
 ## Definition of progress
