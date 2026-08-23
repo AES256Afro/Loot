@@ -104,6 +104,35 @@ Build the first deterministic procedural dungeon grammar: Intake, Fungus Nursery
 
 Do not begin content multiplication until M00-M04 are complete. Record control feel, target hardware baseline, export size, frame-time capture, unresolved engine risks, and whether the Herald/Picket/Spotlight prototype creates a memorable 15-minute story without repetitive chatter.
 
+## M04A - Loot changes the party demo
+
+**Depends on:** M00-M04 runnable foundation.
+
+Turn the crawler spike into a focused proof that equipment changes party decisions instead of only increasing damage. Add a persistent, uncapped Archive; four equipment slots per party member; two shared relic slots; favorites; comparison; and two named loadouts. Present the proof through an upgraded first-person shaded-pixel interface based on the approved promo composition, using original project-owned portraits, enemies, equipment icons, and dungeon materials.
+
+This bridge milestone does not replace M05-M17. It proves their central player promise early enough to change the architecture if the promise is not fun.
+
+**Acceptance criteria**
+
+- The demo contains at least 32 validated equipment definitions spanning common through legendary rarity, with original names, descriptions, powers, and humor.
+- Dena, Moss, Vell, and Ilex each have Weapon, Armor, Implement, and Charm slots; the party also has two Shared Relic slots.
+- The Archive has no capacity limit, never destroys an item automatically, supports favorites, shows equipped ownership and comparison, and equips items without consuming them.
+- Loadout A and Loadout B can be saved and applied. Both persist through atomic save and profile restore.
+- At least 10 named equipment laws alter targeting, Guard distribution, status spread, environmental payoff, healing, party sequencing, or enemy retaliation. Combat logs identify every activated item by name.
+- Every damaging action emits a typed impact record. Party paper dolls and enemy bodies react according to damage type, blocked amount, critical state, and damage-to-maximum-Vitality ratio. Electrical trauma uses an electrocution response rather than an ordinary impact shove, while negligible or fully blocked hits remain appropriately subtle.
+- The proof contains at least 120 authored combat lines and exchanges covering monster openings, tiny and heavy hits, electrical trauma, critical hits, taunts, enemy responses, tactical observations, and party conversations. Selection is deterministic, context-filtered, and avoids immediate repeats.
+- Taunt is a fifth stopped-time command that initiates dialogue and materially changes the next enemy target and damage without becoming a mandatory answer.
+- Two supplied starter loadouts produce observably different resolution logs and combat state from the same party, enemies, commands, and seed.
+- The live HUD follows the approved promo contract: dominant first-person view, four illustrated party portraits, centered illustrated enemies, equipment iconography, compact map and intention panels, and a stone, brass, teal, and magenta visual language.
+- Keyboard and mouse can open the Archive, filter or select an item, favorite it, equip it, switch the selected party member or relic slot, save and apply both loadouts, close the Archive, plan a round, and resolve combat without a timer.
+- A complete exported macOS route can earn loot, open the Archive, equip it, observe its named combat activation, reach the Hearthfold, start a new seed, and retain Archive, favorites, equipment, and loadouts.
+- Automated validation covers content count, legal slots and roles, equipment state, equip compatibility, favorites, loadout round trips, deterministic law compilation, at least two tactical law interactions, and atomic persistence.
+
+**Explicit exclusions**
+
+- No durability, encumbrance, field storage cap, item loss, forced salvage, gear score gate, paid reward, claim timer, seasonal reset, or mandatory multiplayer.
+- This proof does not yet implement full stat derivation, crafting, procedural affixes, cache opening ceremonies, or production balance.
+
 # Phase 1: Combat proof
 
 ## M05 - Combat resources and damage pipeline
@@ -390,6 +419,23 @@ Implement objective definitions, the candidate pipeline and lifecycle in `SITUAT
 - Target rewards and zone-state consequences are previewed.
 - The ledger points toward unfinished categories without turning exploration into a mandatory checklist.
 - Accolades and Indignities arise from exact game events, never inaccessible player data, and their mechanical rewards cannot be farmed by reloading.
+
+## M22A - Grudge Web and recurring rivals
+
+**Depends on:** M18, M21, M22.
+
+Implement the first production recurring-rival cohort using `GRUDGE_WEB.md`. A qualifying enemy may survive or be promoted, remember a bounded set of meaningful facts about the party, pursue an authored motive, change strength within a zone-relative budget, form relationships with other actors, and return in a dungeon, open route, town edge, shop, or semi-safe bar. Rivalry is one possible relationship, not a permanent alignment.
+
+**Acceptance criteria**
+
+- At least six recurring actors cover rivalry, fearful avoidance, opportunistic bargaining, paid neutrality, reluctant assistance, and genuine friendship.
+- A returning actor can accurately reference where, how, and by whom it was defeated using typed EventSummaries rather than raw combat logs or invented facts.
+- Two recurring rivals can form a temporary team, recruit a bounded force, or attach themselves to a stronger local actor through an inspectable relationship or motive transition.
+- At least one enemy-to-friend path emerges from authored situation conditions such as rescue, shared danger, changed information, debt, greed, or self-preservation. It is not a single universal charisma roll.
+- Dialogue can start, redirect, delay, intensify, or end combat. Taunt, parley, bribe, threat, appeal, surrender, and leave options show their important stat, reputation, relationship, knowledge, and world-state inputs before commitment.
+- Failure in social dialogue does not delete gear, block the critical quest, or permanently remove essential settlement services.
+- Rival appearances supplement the current objective and obey cooldown, repetition, population, growth, and interruption budgets. They do not repeatedly stalk the player or replace every ordinary encounter.
+- Save/load preserves identity, appearance history, remembered facts, motive, relationships, allegiance, current location role, growth budget, and unresolved promises without unbounded graph growth.
 
 ## M23 - Boss aftermath and return loop
 

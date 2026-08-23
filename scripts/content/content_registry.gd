@@ -3,10 +3,15 @@ extends Node
 ## Loads immutable authored content definitions and rejects malformed data before
 ## gameplay systems consume it.
 
-const ITEM_DOCUMENT_PATH := "res://content/items/spike_rewards.json"
+const ITEM_DOCUMENT_PATHS := [
+	"res://content/items/spike_rewards.json",
+	"res://content/items/crawler_equipment.json",
+]
 const ENEMY_DOCUMENT_PATH := "res://content/enemies/crawler_enemies.json"
 const VALID_RARITIES := ["common", "uncommon", "rare", "epic", "legendary", "mythic"]
-const VALID_SLOTS := ["weapon", "head", "chest", "hands", "feet", "charm", "utility"]
+const VALID_SLOTS := ["weapon", "head", "chest", "hands", "feet", "charm", "utility", "relic"]
+const VALID_EQUIPMENT_ROLES := ["dena", "moss", "vell", "ilex", "shared", "any"]
+const VALID_DAMAGE_TYPES := ["slash", "impact", "electric", "decay", "acid", "radiant"]
 const ID_PREFIX := "item."
 
 var item_definitions: Dictionary = {}
@@ -22,11 +27,22 @@ func load_all() -> bool:
 	item_definitions.clear()
 	enemy_definitions.clear()
 	last_errors.clear()
-	var item_document := load_json_document(ITEM_DOCUMENT_PATH)
-	if item_document.is_empty():
-		last_errors.append("Could not load item document: %s" % ITEM_DOCUMENT_PATH)
-	else:
+	var item_documents: Array[Dictionary] = []
+	var authored_ids := {}
+	for item_path in ITEM_DOCUMENT_PATHS:
+		var item_document := load_json_document(String(item_path))
+		if item_document.is_empty():
+			last_errors.append("Could not load item document: %s" % item_path)
+			continue
+		item_documents.append(item_document)
 		last_errors.append_array(validate_item_document(item_document))
+		for raw_item in item_document.get("items", []):
+			if typeof(raw_item) != TYPE_DICTIONARY:
+				continue
+			var item_id := String((raw_item as Dictionary).get("id", ""))
+			if authored_ids.has(item_id):
+				last_errors.append("Duplicate item ID across documents: %s" % item_id)
+			authored_ids[item_id] = true
 	var enemy_document := load_json_document(ENEMY_DOCUMENT_PATH)
 	if enemy_document.is_empty():
 		last_errors.append("Could not load enemy document: %s" % ENEMY_DOCUMENT_PATH)
@@ -34,9 +50,10 @@ func load_all() -> bool:
 		last_errors.append_array(validate_enemy_document(enemy_document))
 	if not last_errors.is_empty():
 		return false
-	for raw_item in item_document.get("items", []):
-		var item: Dictionary = raw_item
-		item_definitions[String(item["id"])] = item.duplicate(true)
+	for item_document in item_documents:
+		for raw_item in item_document.get("items", []):
+			var item: Dictionary = raw_item
+			item_definitions[String(item["id"])] = item.duplicate(true)
 	for raw_enemy in enemy_document.get("enemies", []):
 		var enemy: Dictionary = raw_enemy
 		enemy_definitions[String(enemy["id"])] = enemy.duplicate(true)
@@ -94,6 +111,21 @@ func validate_item_document(document: Dictionary) -> PackedStringArray:
 			errors.append("%s must have at least one tag." % label)
 		elif (tags as Array).duplicate().all(func(tag: Variant) -> bool: return typeof(tag) == TYPE_STRING and not String(tag).is_empty()) == false:
 			errors.append("%s tags must be non-empty strings." % label)
+		if item.has("role"):
+			if not VALID_EQUIPMENT_ROLES.has(String(item.get("role", ""))):
+				errors.append("%s has an invalid equipment role." % label)
+			if String(item.get("law_id", "")).strip_edges().is_empty():
+				errors.append("%s is missing law_id." % label)
+			var law_value: Variant = item.get("law_value", null)
+			if typeof(law_value) not in [TYPE_INT, TYPE_FLOAT] or float(law_value) <= 0.0:
+				errors.append("%s must have a positive law_value." % label)
+			var icon_index := int(item.get("icon_index", -1))
+			if icon_index < 0 or icon_index > 15:
+				errors.append("%s icon_index must be between 0 and 15." % label)
+			if String(item.get("role", "")) == "shared" and String(item.get("slot", "")) != "relic":
+				errors.append("%s shared equipment must use the relic slot." % label)
+			if String(item.get("role", "")) != "shared" and String(item.get("slot", "")) == "relic":
+				errors.append("%s relic equipment must use the shared role." % label)
 	return errors
 
 
@@ -127,6 +159,8 @@ func validate_enemy_document(document: Dictionary) -> PackedStringArray:
 			var numeric_value: Variant = enemy.get(numeric_field, 0)
 			if typeof(numeric_value) not in [TYPE_INT, TYPE_FLOAT] or float(numeric_value) <= 0.0:
 				errors.append("%s must have a positive %s." % [label, numeric_field])
+		if not VALID_DAMAGE_TYPES.has(String(enemy.get("damage_type", ""))):
+			errors.append("%s has an invalid damage_type." % label)
 		var tags: Variant = enemy.get("tags", null)
 		if typeof(tags) != TYPE_ARRAY or (tags as Array).is_empty():
 			errors.append("%s must have at least one tag." % label)
