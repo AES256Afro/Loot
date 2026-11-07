@@ -2,7 +2,7 @@
 
 ## Player promise
 
-Finding loot should make Chris reconsider what the party does next. A sword that adds two damage is allowed, but it is not the proof. The proof is a loadout that changes who receives Guard, whether Weakening spreads, what an exposed enemy enables, how a pressure line pays off, or which party member acts as the hinge of the plan.
+Finding loot should make the player reconsider what the party does next. A sword that adds two damage is allowed, but it is not the proof. The proof is a loadout that changes who receives Guard, whether Weakening spreads, what an exposed enemy enables, how a pressure line pays off, or which party member acts as the hinge of the plan.
 
 The Archive is a collection, workshop, and build laboratory. It is not a punishment screen. It has no capacity limit. Equipping never consumes an item. Favoriting never changes drop odds. Defeat never deletes gear. Loadouts remain available between expeditions.
 
